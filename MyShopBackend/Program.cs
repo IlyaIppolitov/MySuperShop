@@ -35,6 +35,7 @@ app.MapGet("/get_products", GetAllProductsAsync);
 app.MapGet("/get_product", GetProductByIdAsync);
 app.MapPost("/add_product", AddProductAsync);
 app.MapPost("/update_product", UpdateProductAsync);
+app.MapPost("/update_product_by_id", UpdateProductByIdAsync);
 app.MapPost("/delete_product", DeleteProductAsync);
 app.MapPost("/delete_product_by_id", DeleteProductByIdAsync);
 
@@ -64,6 +65,19 @@ async Task UpdateProductAsync(AppDbContext dbContext, [FromBody] Product product
     await dbContext.Products
         .Where(p => p.Id == product.Id)
         .ExecuteUpdateAsync(s => s
+            .SetProperty(p => p.Name, p => product.Name)
+            .SetProperty(p => p.Price, p => product.Price)
+    );
+    await dbContext.SaveChangesAsync();
+}
+
+// (U) Update product
+async Task UpdateProductByIdAsync(AppDbContext dbContext, [FromQuery] Guid guid, [FromBody] Product product)
+{
+    await dbContext.Products
+        .Where(p => p.Id == guid)
+        .ExecuteUpdateAsync(s => s
+            .SetProperty(p => p.Id, p => product.Id)
             .SetProperty(p => p.Name, p => product.Name)
             .SetProperty(p => p.Price, p => product.Price)
     );
