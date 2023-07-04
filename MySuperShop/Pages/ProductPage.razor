@@ -1,0 +1,45 @@
+﻿@page "/products/{ProductId:guid}"
+
+@inject ICatalog Catalog
+@inject ICurrentTime CurrentTime
+
+<MudGrid>
+    <MudItem md="12" sm="12">
+        <MudText Typo="Typo.h3">@_product.Name</MudText>
+    </MudItem>
+    <MudItem lg="4" md="6" sm="12">
+        <img width="300" src="@getPicName()" alt="@_product.Name" />
+    </MudItem>
+    <MudItem lg="4" md="6" sm="12">
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h4" Class="mb-4">Цена: @String.Format("{0:0.00}", _product.Price) &#8381</MudText>
+            <MudText Typo="Typo.body1">
+                <strong>Дата производства:</strong> @_product.ProducedAt.ToShortDateString()
+            </MudText>
+            <MudText Typo="Typo.body1">
+                <strong>Годен до:</strong> @_product.ExpiredAt.ToShortDateString();
+            </MudText>
+            <MudText Typo="Typo.body1" Class="mb-4"><strong>Описание: </strong>@_product.Description</MudText>
+            <MudText Typo="Typo.body1" Class="mb-4"><strong>Доступно: </strong>@_product.Stock</MudText>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+	[Parameter]
+	public Guid ProductId { get; set; }
+	private Product _product;
+
+	protected override async Task OnInitializedAsync()
+	{ 
+		await base.OnInitializedAsync();
+		_product = Catalog.GetProductById(ProductId, CurrentTime);
+    }
+
+    private string fullPicName = "/pics/";
+
+    public string getPicName()
+    {
+        return fullPicName + _product.Pic;
+    }
+}

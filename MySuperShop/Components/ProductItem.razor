@@ -1,0 +1,20 @@
+﻿<MudCardMedia Image="@getPicName()" Height="100" />
+<MudCardContent>
+	<MudText Typo="Typo.h5" Class="mud-info">@Product.Name</MudText>
+	<MudText Typo="Typo.body2" Class="mud-info">@Product.Description</MudText>
+	<MudText Typo="Typo.body2" Class="mud-info">@DateOnly.FromDateTime(Product.ProducedAt) - @DateOnly.FromDateTime(Product.ExpiredAt)</MudText>
+	<MudText Typo="Typo.body2" Class="mud-info">Цена: @Product.Price &#8381</MudText>
+	<MudText Typo="Typo.body2" Class="mud-info">Остаток: @Product.Stock</MudText>
+</MudCardContent>
+
+@code {
+	[Parameter]
+	public Product Product { get; set; }
+
+	private string fullPicName = "/pics/";
+
+	public string getPicName()
+	{
+		return fullPicName + Product.Pic;
+	}
+}
