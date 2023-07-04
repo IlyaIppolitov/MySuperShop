@@ -71,7 +71,7 @@ async Task UpdateProductAsync(AppDbContext dbContext, [FromBody] Product product
     await dbContext.SaveChangesAsync();
 }
 
-// (U) Update product
+// (U) Update product by Id (Id change is possible)
 async Task UpdateProductByIdAsync(AppDbContext dbContext, [FromQuery] Guid guid, [FromBody] Product product)
 {
     await dbContext.Products
@@ -90,6 +90,7 @@ async Task DeleteProductAsync(AppDbContext dbContext, [FromBody] Product product
     await dbContext.Products.Where(p => p.Id == product.Id).ExecuteDeleteAsync();
     await dbContext.SaveChangesAsync();
 }
+// (D) Delete product by Id
 async Task DeleteProductByIdAsync(AppDbContext dbContext, [FromQuery] Guid guid)
 {
     await dbContext.Products.Where(p => p.Id == guid).ExecuteDeleteAsync();
