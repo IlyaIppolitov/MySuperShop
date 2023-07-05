@@ -4,6 +4,7 @@ using MySuperShop;
 using MudBlazor.Services;
 using MySuperShop.Interfaces;
 using MySuperShop.Services;
+using MySuperShop.Models;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -13,5 +14,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddMudServices();
 builder.Services.AddSingleton<ICatalog, InMemoryCatalog>();
 builder.Services.AddSingleton<ICurrentTime, UtcCurrentTime>();
+builder.Services.AddSingleton<IMyShopClient>(new MyShopClient(host: "https://localhost:7161/"));
 
 await builder.Build().RunAsync();
