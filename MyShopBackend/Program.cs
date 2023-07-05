@@ -47,54 +47,80 @@ async Task<Product[]> GetAllProductsAsync(AppDbContext dbContext)
 }
 
 // (R) Read product by Id
-async Task<Product> GetProductByIdAsync(AppDbContext dbContext, [FromQuery] Guid guid)
+async Task<IResult> GetProductByIdAsync(AppDbContext dbContext, [FromQuery] Guid id)
 {
-    return await dbContext.Products.Where(p => p.Id == guid).FirstAsync();
+    var foundProduct = await dbContext.Products.Where(p => p.Id == id).FirstOrDefaultAsync();
+    if (foundProduct == null)
+    {
+        return Results.NotFound($"Product with Id {id} not found");
+    }
+    return Results.Ok(foundProduct);
 }
 
 // (C) Add product
-async Task AddProductAsync(AppDbContext dbContext, Product product)
+async Task<IResult> AddProductAsync(AppDbContext dbContext, Product product)
 {
     await dbContext.Products.AddAsync(product);
     await dbContext.SaveChangesAsync();
+
+    return Results.Created("Объект создан", product);
 }
 
 // (U) Update product
-async Task UpdateProductAsync(AppDbContext dbContext, [FromBody] Product product)
+async Task<IResult> UpdateProductAsync(AppDbContext dbContext, [FromBody] Product product)
 {
-    await dbContext.Products
-        .Where(p => p.Id == product.Id)
-        .ExecuteUpdateAsync(s => s
-            .SetProperty(p => p.Name, p => product.Name)
-            .SetProperty(p => p.Price, p => product.Price)
-    );
+    var foundProduct = await dbContext.Products.Where(p => p.Id == product.Id).FirstOrDefaultAsync();
+    if (foundProduct == null)
+    {
+        return Results.NotFound($"Product with Id {product.Id} not found");
+    }
+
+    foundProduct.Name = product.Name;
+    foundProduct.Price = product.Price;
     await dbContext.SaveChangesAsync();
+
+    return Results.Ok();
 }
 
-// (U) Update product by Id (Id change is possible)
-async Task UpdateProductByIdAsync(AppDbContext dbContext, [FromQuery] Guid guid, [FromBody] Product product)
+// (U) Update product by Id
+async Task<IResult> UpdateProductByIdAsync(AppDbContext dbContext, [FromQuery] Guid id, [FromBody] Product product)
 {
-    await dbContext.Products
-        .Where(p => p.Id == guid)
-        .ExecuteUpdateAsync(s => s
-            .SetProperty(p => p.Id, p => product.Id)
-            .SetProperty(p => p.Name, p => product.Name)
-            .SetProperty(p => p.Price, p => product.Price)
-    );
+    var foundProduct = await dbContext.Products.Where(p => p.Id == id).FirstOrDefaultAsync();
+    if (foundProduct == null)
+    {
+        return Results.NotFound($"Product with Id {id} not found");
+    }
+
+    foundProduct.Name = product.Name;
+    foundProduct.Price = product.Price;
     await dbContext.SaveChangesAsync();
+
+    return Results.Ok();
 }
 
 // (D) Delete product
-async Task DeleteProductAsync(AppDbContext dbContext, [FromBody] Product product)
+async Task<IResult> DeleteProductAsync(AppDbContext dbContext, [FromBody] Product product)
 {
-    await dbContext.Products.Where(p => p.Id == product.Id).ExecuteDeleteAsync();
+    var deletedCount = await dbContext.Products.Where(p => p.Id == product.Id).ExecuteDeleteAsync();
+
+    if (deletedCount == 0)
+    {
+        return Results.NotFound($"Product with Id {product.Id} not found");
+    }
     await dbContext.SaveChangesAsync();
+    return Results.Ok();
 }
 // (D) Delete product by Id
-async Task DeleteProductByIdAsync(AppDbContext dbContext, [FromQuery] Guid guid)
+async Task<IResult> DeleteProductByIdAsync(AppDbContext dbContext, [FromQuery] Guid id)
 {
-    await dbContext.Products.Where(p => p.Id == guid).ExecuteDeleteAsync();
+    var deletedCount = await dbContext.Products.Where(p => p.Id == id).ExecuteDeleteAsync();
+
+    if (deletedCount == 0)
+    {
+        return Results.NotFound($"Product with Id {id} not found");
+    }
     await dbContext.SaveChangesAsync();
+    return Results.Ok();
 }
 
 app.Run();
