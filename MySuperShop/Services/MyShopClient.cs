@@ -1,4 +1,5 @@
-﻿using MySuperShop.Models;
+﻿using MySuperShop.Interfaces;
+using MySuperShop.Models;
 using System.Net.Http.Json;
 
 namespace MySuperShop.Services
@@ -17,11 +18,15 @@ namespace MySuperShop.Services
                 throw new ArgumentException("The host address should be a valid url", nameof(host));
             }
             this._host = host;
-            if (httpClient == null)
+            if (httpClient is null)
             {
-
+                this._httpClient = new HttpClient();
+            } 
+            else 
+            {
+                this._httpClient = httpClient;
+                this._httpClientInjected = true;
             }
-            this._httpClient = httpClient ?? new HttpClient();
             if (_httpClient.BaseAddress is null)
             {
                 _httpClient.BaseAddress = hostUri;
@@ -30,13 +35,25 @@ namespace MySuperShop.Services
 
         public void Dispose()
         {
-            ((IDisposable)_httpClient).Dispose();
+            if (!_httpClientInjected)
+                ((IDisposable)_httpClient).Dispose();
+        }
+
+        public async Task<Product[]> GetProducts()
+        {
+            var products = await _httpClient.GetFromJsonAsync<Product[]>($"get_products");
+            if (products is null)
+            {
+                throw new InvalidOperationException("The server returned null");
+            }
+            return products;
         }
 
         public async Task<Product> GetProduct(Guid id)
         {
+            ArgumentNullException.ThrowIfNull(id);
             var product = await _httpClient.GetFromJsonAsync<Product>($"get_product?id={id}");
-            if (product == null)
+            if (product is null)
             {
                 throw new InvalidOperationException("The server returned null");
             }
@@ -45,7 +62,30 @@ namespace MySuperShop.Services
 
         public async Task AddProduct(Product product)
         {
+            ArgumentNullException.ThrowIfNull(product);
+            using var response = await _httpClient.PostAsJsonAsync("add_product", product);
+            response.EnsureSuccessStatusCode();
+        }
 
+        public async Task UpdateProduct(Product product)
+        {
+            ArgumentNullException.ThrowIfNull(product);
+            using var response = await _httpClient.PostAsJsonAsync("update_product", product);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task UpdateProductById(Guid id, Product product)
+        {
+            ArgumentNullException.ThrowIfNull(product);
+            using var response = await _httpClient.PostAsJsonAsync($"update_product_by_id?id={id}", product);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task DeleteProductById(Guid id)
+        {
+            ArgumentNullException.ThrowIfNull(id);
+            using var response = await _httpClient.DeleteAsync($"delete_product_by_id?id={id}");
+            response.EnsureSuccessStatusCode();
         }
     }
 }

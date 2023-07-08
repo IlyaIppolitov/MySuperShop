@@ -1,4 +1,6 @@
-﻿namespace MySuperShop.Models
+﻿using MySuperShop.Models;
+
+namespace MySuperShop.Interfaces
 {
     public interface IMyShopClient
     {

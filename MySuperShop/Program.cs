@@ -4,7 +4,6 @@ using MySuperShop;
 using MudBlazor.Services;
 using MySuperShop.Interfaces;
 using MySuperShop.Services;
-using MySuperShop.Models;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
