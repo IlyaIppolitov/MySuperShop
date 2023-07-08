@@ -12,8 +12,12 @@ namespace MySuperShop.Services
 
         public MyShopClient(string host = "http://myshop.com", HttpClient? httpClient = null)
         {
-            ArgumentException.ThrowIfNullOrEmpty(host);
-            if (Uri.TryCreate(host, UriKind.Absolute, out var hostUri))
+            if (string.IsNullOrEmpty(host))
+                throw new ArgumentNullException(nameof(host));
+
+            var aaa = String.Format("https://{0}", host);
+
+            if (Uri.TryCreate(String.Format("https://{0}", host), UriKind.Absolute, out var hostUri))
             {
                 throw new ArgumentException("The host address should be a valid url", nameof(host));
             }

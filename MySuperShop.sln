@@ -5,7 +5,7 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MySuperShop", "MySuperShop\MySuperShop.csproj", "{81C97105-EAEB-44EE-B77B-F6B8F7B2C399}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyShopBackend", "MyShopBackend\MyShopBackend.csproj", "{01133CA1-B18C-41BB-8BDC-0268DFCA6CA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyShopBackend", "MyShopBackend\MyShopBackend.csproj", "{01133CA1-B18C-41BB-8BDC-0268DFCA6CA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

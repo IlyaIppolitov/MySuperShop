@@ -1,0 +1,30 @@
+﻿@page "/testPage"
+@*@inject IMyShopClient client*@
+
+<MudText Typo="Typo.h4" Justify="Justify.Center" Align="Align.Center">TestPage</MudText>
+
+<MudDivider DividerType="DividerType.Inset" />
+
+<MudGrid Spacing="2" Justify="Justify.Center">
+    <MudItem>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary">Get all</MudButton>
+    </MudItem>
+    <MudItem>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary">Get by id</MudButton>
+    </MudItem>
+    <MudItem>
+        <MudButton Variant="Variant.Filled" Color="Color.Tertiary">Add</MudButton>
+    </MudItem>
+    <MudItem>
+        <MudButton Variant="Variant.Filled" Color="Color.Warning">Update</MudButton>
+    </MudItem>
+    <MudItem>
+        <MudButton Variant="Variant.Filled" Color="Color.Error">Delete</MudButton>
+    </MudItem>
+</MudGrid>
+
+
+
+@code {
+
+}
