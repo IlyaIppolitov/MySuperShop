@@ -1,9 +1,75 @@
-﻿namespace MyShopBackend.Data
+﻿using System.Text.Json.Serialization;
+
+namespace MyShopBackend.Data
 {
-    public class Product
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public decimal Price { get; set; }
-    }
+
+	/// <summary>
+	/// Модель данных для товара в магазине
+	/// </summary>
+	public class Product : ICloneable
+	{
+
+		/// <summary>
+		/// Конструтор
+		/// </summary>
+		/// <param name="name"></param> Название товара
+		/// <param name="price"></param> Цена
+		public Product(string name, decimal price)
+		{
+			// Валидация параметров
+			if (string.IsNullOrWhiteSpace(name))
+				throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
+			if (price < 0) throw new ArgumentOutOfRangeException(nameof(price));
+
+			Name = name;
+			Price = price;
+        }
+        public Product(Guid id, string name, decimal price)
+        {
+            // Валидация параметров
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
+            if (price < 0) throw new ArgumentOutOfRangeException(nameof(price));
+
+			Id = id;
+            Name = name;
+            Price = price;
+        }
+
+        [JsonConstructor]
+		public Product(Guid id, string name, string? description, decimal price,double stock, string pic)
+		{
+			Id = id;
+			Name = name;
+			Pic = pic;
+			Description = description;
+			Price = price;
+			Stock = stock;
+			Pic = pic;
+		}
+
+		/// <summary> ID товара </summary>
+		public Guid Id { get; set; }
+
+		/// <summary> Название товара </summary>
+		public string Name { get; set; }
+
+		/// <summary> Описание </summary>
+		public string? Description { get; set; }
+
+		/// <summary> Цена </summary>
+		public decimal Price { get; set; }
+
+		/// <summary> Количество товара на складе </summary>
+		public double Stock { get; set; }
+
+		/// <summary> Название товара </summary>
+		public string? Pic { get; set; }
+
+		/// <summary> Метод для реализации интерфейса клонирования </summary>
+		public object Clone()
+		{
+			return MemberwiseClone();
+		}
+	}
 }

@@ -4,11 +4,11 @@ namespace MySuperShop.Pages
 {
 	public partial class CatalogPage
 	{
-		private List<Product>? products;
+		private Product[] products;
 
 		protected override async Task OnInitializedAsync()
 		{
-			products = await Catalog.GetProductsAsync(CurrentTime);
+			products = await client.GetProducts();
 		}
 
 		void NavToProductCard(Guid guid)

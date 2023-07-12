@@ -206,8 +206,6 @@ namespace MySuperShop.Services
 				product.Id = i == 0 ? Guid.Empty : Guid.NewGuid();
 				product.Pic = productNamesPics[i].pic;
 				product.Description = "Описание " + name;
-				product.ProducedAt = producedAt;
-				product.ExpiredAt = expiredAt;
 				product.Stock = stock;
 				products.TryAdd(product.Id, product);
 			}

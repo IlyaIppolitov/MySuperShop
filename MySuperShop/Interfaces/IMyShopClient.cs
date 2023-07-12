@@ -6,5 +6,8 @@ namespace MySuperShop.Interfaces
     {
         Task AddProduct(Product product);
         Task<Product> GetProduct(Guid id);
+        Task<Product[]> GetProducts();
+        Task UpdateProduct(Product product);
+        Task DeleteProduct(Product product);
     }
 }

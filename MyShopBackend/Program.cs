@@ -16,7 +16,20 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Добавление CORS в builder
+builder.Services.AddCors();
+
 var app = builder.Build();
+
+// Добавление CORS в WebApplication
+app.UseCors(policy =>
+{
+    policy
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowAnyOrigin();
+});
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -67,7 +80,7 @@ async Task<IResult> AddProductAsync(AppDbContext dbContext, Product product)
 }
 
 // (U) Update product
-async Task<IResult> UpdateProductAsync(AppDbContext dbContext, [FromBody] Product product)
+async Task<IResult> UpdateProductAsync(AppDbContext dbContext, Product product)
 {
     var foundProduct = await dbContext.Products.Where(p => p.Id == product.Id).FirstOrDefaultAsync();
     if (foundProduct == null)

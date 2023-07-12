@@ -14,7 +14,6 @@ namespace MySuperShop.Models
 		/// </summary>
 		/// <param name="name"></param> Название товара
 		/// <param name="price"></param> Цена
-		[JsonConstructor]
 		public Product(string name, decimal price)
 		{
 			// Валидация параметров
@@ -24,17 +23,27 @@ namespace MySuperShop.Models
 
 			Name = name;
 			Price = price;
-		}
+        }
+        public Product(Guid id, string name, decimal price)
+        {
+            // Валидация параметров
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
+            if (price < 0) throw new ArgumentOutOfRangeException(nameof(price));
 
-		public Product(Guid id, string name, string? description, decimal price, DateTime producedAt, DateTime expiredAt, double stock, string pic)
+            Id = id;
+            Name = name;
+            Price = price;
+        }
+
+        [JsonConstructor]
+		public Product(Guid id, string name, string? description, decimal price, double stock, string pic)
 		{
 			Id = id;
 			Name = name;
 			Pic = pic;
 			Description = description;
 			Price = price;
-			ProducedAt = producedAt;
-			ExpiredAt = expiredAt;
 			Stock = stock;
 			Pic = pic;
 		}
@@ -50,12 +59,6 @@ namespace MySuperShop.Models
 
 		/// <summary> Цена </summary>
 		public decimal Price { get; set; }
-
-		/// <summary> Дата производства </summary>
-		public DateTime ProducedAt { get; set; }
-
-		/// <summary> Дата окончания срока действия </summary>
-		public DateTime ExpiredAt { get; set; }
 
 		/// <summary> Количество товара на складе </summary>
 		public double Stock { get; set; }

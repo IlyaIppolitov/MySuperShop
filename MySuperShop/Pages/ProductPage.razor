@@ -13,12 +13,6 @@
     <MudItem lg="4" md="6" sm="12">
         <MudPaper Class="pa-4">
             <MudText Typo="Typo.h4" Class="mb-4">Цена: @String.Format("{0:0.00}", _product.Price) &#8381</MudText>
-            <MudText Typo="Typo.body1">
-                <strong>Дата производства:</strong> @_product.ProducedAt.ToShortDateString()
-            </MudText>
-            <MudText Typo="Typo.body1">
-                <strong>Годен до:</strong> @_product.ExpiredAt.ToShortDateString();
-            </MudText>
             <MudText Typo="Typo.body1" Class="mb-4"><strong>Описание: </strong>@_product.Description</MudText>
             <MudText Typo="Typo.body1" Class="mb-4"><strong>Доступно: </strong>@_product.Stock</MudText>
         </MudPaper>
