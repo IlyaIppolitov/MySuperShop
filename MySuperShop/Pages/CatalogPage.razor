@@ -1,22 +1,27 @@
 ﻿@page "/catalog"
-@inject ICatalog Catalog
-@inject ICurrentTime CurrentTime
 @inject NavigationManager Navigation
-@inject IMyShopClient client
+@inject IMyShopClient Client
 
 
 <MudText Typo="Typo.h4" Align="Align.Center" Class="ma-20">Каталог товаров</MudText>
 <MudGrid Spacing="2" Justify="Justify.Center">
-	@foreach (var product in products)
+	@if (_products is null){
+		<MudItem>
+			<MudText Typo="Typo.h6" Align="Align.Center" Class="ma-20">Страница загружается</MudText>
+		</MudItem>}
+	else
 	{
-	<MudItem>
-		<MudCard Class="mud-info">
-			<ProductItem Product="product" />
-			<MudCardActions>
-					<MudButton Variant="Variant.Text" OnClick="() => NavToProductCard(product.Id)">Карточка товара</MudButton>
-			</MudCardActions>
-		</MudCard>
-	</MudItem>
+		@foreach (var product in _products)
+		{
+		<MudItem>
+			<MudCard Class="mud-info">
+				<ProductItem Product="product" />
+				<MudCardActions>
+						<MudButton Variant="Variant.Text" OnClick="() => NavToProductCard(product.Id)">Карточка товара</MudButton>
+				</MudCardActions>
+			</MudCard>
+		</MudItem>
+		}
 	}
 </MudGrid>
 

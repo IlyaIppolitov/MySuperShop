@@ -1,0 +1,26 @@
+﻿@page "/ReadOnlyPage"
+<h3>ReadOnlyPage</h3>
+<MudStack Row>
+    <MudCard>
+        <MudCardContent>
+            <MudText Align="Align.Center" Class="mb-n4">ReadOnly Form</MudText>
+            <MudForm ReadOnly="ReadOnly">
+                <MudTextField T="string" Label="Text" />
+                <MudNumericField T="int" Label="Number" />
+                <MudDatePicker Label="Date" />
+                <MudSwitch T="bool" Label="Switch" />
+                <MudCheckBox T="bool" Label="CheckBox" />
+            </MudForm>
+        </MudCardContent>
+        <MudCardActions>
+            <MudCheckBox @bind-Checked="ReadOnly">ReadOnly</MudCheckBox>
+            <MudCheckBox @bind-Checked="NestedReadOnly">Nested ReadOnly</MudCheckBox>
+        </MudCardActions>
+    </MudCard>
+</MudStack>
+@code {
+    bool ReadOnly = true;
+    bool NestedReadOnly;
+    bool Disabled = true;
+    bool NestedDisabled;
+}

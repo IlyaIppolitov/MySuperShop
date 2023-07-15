@@ -1,39 +1,53 @@
 ﻿@page "/products/{ProductId:guid}"
 
-@inject ICatalog Catalog
-@inject ICurrentTime CurrentTime
+@inject IMyShopClient Client
 
 <MudGrid>
-    <MudItem md="12" sm="12">
-        <MudText Typo="Typo.h3">@_product.Name</MudText>
-    </MudItem>
-    <MudItem lg="4" md="6" sm="12">
-        <img width="300" src="@getPicName()" alt="@_product.Name" />
-    </MudItem>
-    <MudItem lg="4" md="6" sm="12">
-        <MudPaper Class="pa-4">
-            <MudText Typo="Typo.h4" Class="mb-4">Цена: @String.Format("{0:0.00}", _product.Price) &#8381</MudText>
-            <MudText Typo="Typo.body1" Class="mb-4"><strong>Описание: </strong>@_product.Description</MudText>
-            <MudText Typo="Typo.body1" Class="mb-4"><strong>Доступно: </strong>@_product.Stock</MudText>
-        </MudPaper>
-    </MudItem>
+    @if (_product is null)
+    {
+        <MudItem>
+            <MudText Typo="Typo.h6" Align="Align.Center" Class="ma-20">Товар загружается</MudText>
+        </MudItem>
+    }
+    else
+    {
+        <MudCard>
+            <MudCardContent>
+                <MudForm ReadOnly="ReadOnly">
+                    <MudTextField T="string" Typo="Typo.h3" Class="mb-4" @bind-Value="_name" Label="Наименование"/>
+                    <MudItem lg="4" md="6" sm="12">
+                        <img width="300" src="@_picAddress" alt="@_name"/>
+                    </MudItem>
+                    <MudNumericField T="decimal" Typo="Typo.h4" Class="mb-4" @bind-Value="_price" Label="Цена, руб "/>
+                    <MudTextField T="string" Typo="Typo.body1" Class="mb-4" Label="Описание" @bind-Value="_description" />
+                    <MudNumericField T="double" Typo="Typo.body1" Class="mb-4" @bind-Value="_stock" Label="Количество "/>
+                </MudForm>
+            </MudCardContent>
+        </MudCard>
+    }
 </MudGrid>
+<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Update" Color="Color.Warning" Size="Size.Large">Edit</MudButton>
+<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" IconColor="Color.Secondary" Size="Size.Large">Save</MudButton>
 
 @code {
 	[Parameter]
 	public Guid ProductId { get; set; }
-	private Product _product;
+	private Product? _product;
+    bool ReadOnly = true;
+    private string _name;
+    private string _description;
+    private decimal _price;
+    private string _picAddress;
+    private double _stock;
 
 	protected override async Task OnInitializedAsync()
 	{ 
 		await base.OnInitializedAsync();
-		_product = Catalog.GetProductById(ProductId, CurrentTime);
-    }
-
-    private string fullPicName = "/pics/";
-
-    public string getPicName()
-    {
-        return fullPicName + _product.Pic;
-    }
+	    _product = await Client.GetProduct(ProductId);
+	    _name = _product.Name;
+	    _description = _product.Description ?? "";
+	    _price = _product.Price;
+	    _picAddress = _product.Pic ?? "";
+	    _stock = _product.Stock;
+	}
 }

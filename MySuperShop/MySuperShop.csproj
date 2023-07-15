@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -18,8 +18,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="Interfaces\" />
+		<Folder Include="Services\" />
 		<Folder Include="wwwroot\css\" />
 		<Folder Include="wwwroot\pics\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\MySuperShop.HttpApiClient\MySuperShop.HttpApiClient.csproj" />
 	</ItemGroup>
 	
 	

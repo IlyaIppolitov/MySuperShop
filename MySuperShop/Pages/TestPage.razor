@@ -150,9 +150,9 @@
             RecievedData = "Wrong format of price";
             await InvokeAsync(() => StateHasChanged());
         }
-            if (Guid.TryParse(GuidValue, out var testGuid))
+        if (Guid.TryParse(GuidValue, out var testGuid))
         {
-            Product product = new Product(Guid.NewGuid(), NewNameValue, newPrice);
+            Product product = new Product(testGuid, NewNameValue, newPrice);
             product.Description = product.Name + "Описание";
             product.Stock = 5;
             try

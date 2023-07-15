@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 
 namespace MyShopBackend.Data
 {
@@ -6,6 +8,7 @@ namespace MyShopBackend.Data
 	/// <summary>
 	/// Модель данных для товара в магазине
 	/// </summary>
+	[Index("Price")]
 	public class Product : ICloneable
 	{
 
@@ -48,7 +51,8 @@ namespace MyShopBackend.Data
 			Pic = pic;
 		}
 
-		/// <summary> ID товара </summary>
+		/// <summary> ID товара </
+		[Key]
 		public Guid Id { get; set; }
 
 		/// <summary> Название товара </summary>

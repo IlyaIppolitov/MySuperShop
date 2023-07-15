@@ -19,12 +19,16 @@ builder.Services.AddSwaggerGen();
 // Добавление CORS в builder
 builder.Services.AddCors();
 
+// Подключение репозитория базы данных
+builder.Services.AddScoped<IProductRepository, ProductRepositoryEf>();
+
 var app = builder.Build();
 
 // Добавление CORS в WebApplication
 app.UseCors(policy =>
 {
     policy
+        .WithOrigins("https://localhost:5001")
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowAnyOrigin();
@@ -48,92 +52,89 @@ app.MapGet("/get_products", GetAllProductsAsync);
 app.MapGet("/get_product", GetProductByIdAsync);
 app.MapPost("/add_product", AddProductAsync);
 app.MapPost("/update_product", UpdateProductAsync);
-app.MapPost("/update_product_by_id", UpdateProductByIdAsync);
 app.MapPost("/delete_product", DeleteProductAsync);
-app.MapPost("/delete_product_by_id", DeleteProductByIdAsync);
 
 
 // (R) Read All
-async Task<Product[]> GetAllProductsAsync(AppDbContext dbContext)
+async Task<IResult> GetAllProductsAsync(IProductRepository repository, CancellationToken cancellationToken)
 {
-    return await dbContext.Products.ToArrayAsync();
+    try
+    {
+        var products =  await repository.GetProducts(cancellationToken);
+        return Results.Ok(products);
+    }
+    catch (Exception e)
+    {
+        return Results.Empty;
+    }
 }
 
 // (R) Read product by Id
-async Task<IResult> GetProductByIdAsync(AppDbContext dbContext, [FromQuery] Guid id)
+async Task<IResult> GetProductByIdAsync(
+    IProductRepository repository,
+    [FromQuery] Guid id,
+    CancellationToken cancellationToken)
 {
-    var foundProduct = await dbContext.Products.Where(p => p.Id == id).FirstOrDefaultAsync();
-    if (foundProduct == null)
+    try
     {
-        return Results.NotFound($"Product with Id {id} not found");
+        var foundProduct = await repository.GetProductById(id, cancellationToken);
+        return Results.Ok(foundProduct);
     }
-    return Results.Ok(foundProduct);
+    catch (InvalidOperationException eх)
+    {
+        return Results.NotFound();
+    }
 }
 
 // (C) Add product
-async Task<IResult> AddProductAsync(AppDbContext dbContext, Product product)
+async Task<IResult> AddProductAsync(
+    IProductRepository repository,
+    Product product, 
+    CancellationToken cancellationToken)
 {
-    await dbContext.Products.AddAsync(product);
-    await dbContext.SaveChangesAsync();
-
-    return Results.Created("Объект создан", product);
+    try
+    {
+        await repository.Add(product, cancellationToken);
+        return Results.Created("Объект создан!", product);
+    }
+    catch (NotSupportedException ex)
+    {
+        return Results.Problem(ex.ToString());
+    }
 }
 
 // (U) Update product
-async Task<IResult> UpdateProductAsync(AppDbContext dbContext, Product product)
+async Task<IResult> UpdateProductAsync(
+    IProductRepository repository,
+    [FromBody] Product product,
+    CancellationToken cancellationToken)
 {
-    var foundProduct = await dbContext.Products.Where(p => p.Id == product.Id).FirstOrDefaultAsync();
-    if (foundProduct == null)
+    try
     {
-        return Results.NotFound($"Product with Id {product.Id} not found");
+        await repository.Update(product, cancellationToken);
+        return Results.Ok();
     }
-
-    foundProduct.Name = product.Name;
-    foundProduct.Price = product.Price;
-    await dbContext.SaveChangesAsync();
-
-    return Results.Ok();
-}
-
-// (U) Update product by Id
-async Task<IResult> UpdateProductByIdAsync(AppDbContext dbContext, [FromQuery] Guid id, [FromBody] Product product)
-{
-    var foundProduct = await dbContext.Products.Where(p => p.Id == id).FirstOrDefaultAsync();
-    if (foundProduct == null)
+    catch (Exception e)
     {
-        return Results.NotFound($"Product with Id {id} not found");
+        return Results.NotFound();
     }
-
-    foundProduct.Name = product.Name;
-    foundProduct.Price = product.Price;
-    await dbContext.SaveChangesAsync();
-
-    return Results.Ok();
 }
 
 // (D) Delete product
-async Task<IResult> DeleteProductAsync(AppDbContext dbContext, [FromBody] Product product)
+async Task<IResult> DeleteProductAsync(
+    IProductRepository repository,
+    [FromBody] Product product,
+    CancellationToken cancellationToken)
 {
-    var deletedCount = await dbContext.Products.Where(p => p.Id == product.Id).ExecuteDeleteAsync();
-
-    if (deletedCount == 0)
+    try
     {
-        return Results.NotFound($"Product with Id {product.Id} not found");
+        await repository.Delete(product, cancellationToken);
+        return Results.Ok();
     }
-    await dbContext.SaveChangesAsync();
-    return Results.Ok();
-}
-// (D) Delete product by Id
-async Task<IResult> DeleteProductByIdAsync(AppDbContext dbContext, [FromQuery] Guid id)
-{
-    var deletedCount = await dbContext.Products.Where(p => p.Id == id).ExecuteDeleteAsync();
-
-    if (deletedCount == 0)
+    catch (Exception e)
     {
-        return Results.NotFound($"Product with Id {id} not found");
+        return Results.NotFound();
     }
-    await dbContext.SaveChangesAsync();
-    return Results.Ok();
 }
 
 app.Run();
