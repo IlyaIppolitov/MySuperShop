@@ -17,11 +17,29 @@
 			<MudCard Class="mud-info">
 				<ProductItem Product="product" />
 				<MudCardActions>
-						<MudButton Variant="Variant.Text" OnClick="() => NavToProductCard(product.Id)">Карточка товара</MudButton>
+			        <MudButton OnClick="async () => await DeleteProduct(product)"  Variant="Variant.Text" Color="Color.Secondary">DELETE</MudButton>
+			        <MudButton OnClick="() => NavToProductCard(product.Id)" Variant="Variant.Text" Color="Color.Warning">INFO</MudButton>
 				</MudCardActions>
 			</MudCard>
 		</MudItem>
 		}
 	}
 </MudGrid>
+	<MudDivider DividerType="DividerType.Middle" Class="my-6"/>
+<MudItem Typo="Typo.h4" Align="Align.Center" Class="ma-20">
+	<MudButton OnClick="CreateProduct" Variant="Variant.Text" Color="Color.Dark">CREATE NEW PRODUCT</MudButton>
+</MudItem>
+<MudPopover Open="@_editPopoverIsOpen" Fixed="true" Class="px-8 pt-8">
+	<MudTextField T="string" Typo="Typo.h3" Class="mb-4" @bind-Value="_name" Label="Наименование"/>
+	<MudTextField T="string" Typo="Typo.h3" Class="mb-4" @bind-Value="_pic" Label="Путь к фото"/>
+	<MudTextField T="string" Typo="Typo.h3" Class="mb-4" @bind-Value="_description" Label="Описание"/>
+	<MudNumericField HideSpinButtons="true" @bind-Value="_price" Label="Цена, руб" Variant="Variant.Text" />
+	<MudNumericField HideSpinButtons="true" @bind-Value="_stock" Label="Количество" Variant="Variant.Text" />
+	<MudDivider DividerType="DividerType.Middle" Class="my-6"/>
+	<MudToolBar>
+		<MudFab OnClick="CloseEditPopover" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Cancel"/>
+		<MudSpacer />
+		<MudFab OnClick="SaveAndCloseEditPopover" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Save"/>
+	</MudToolBar>
+</MudPopover>
 

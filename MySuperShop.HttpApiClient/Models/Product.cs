@@ -37,16 +37,15 @@ namespace MySuperShop.Models
         }
 
         [JsonConstructor]
-		public Product(Guid id, string name, string? description, decimal price, double stock, string pic)
-		{
-			Id = id;
-			Name = name;
-			Pic = pic;
-			Description = description;
-			Price = price;
-			Stock = stock;
-			Pic = pic;
-		}
+        public Product(Guid id, string name, string? description, decimal price, double? stock, string? pic)
+        {
+	        Id = id;
+	        Name = name;
+	        Pic = pic ?? "";
+	        Description = description ?? "Описание " + name;
+	        Price = price;
+	        Stock = stock ?? 0;
+        }
 
 		/// <summary> ID товара </summary>
 		public Guid Id { get; set; }
@@ -55,16 +54,16 @@ namespace MySuperShop.Models
 		public string Name { get; set; }
 
 		/// <summary> Описание </summary>
-		public string? Description { get; set; }
+		public string? Description { get; set; } = "";
 
 		/// <summary> Цена </summary>
 		public decimal Price { get; set; }
 
 		/// <summary> Количество товара на складе </summary>
-		public double Stock { get; set; }
+		public double? Stock { get; set; } = 0;
 
 		/// <summary> Название товара </summary>
-		public string? Pic { get; set; }
+		public string? Pic { get; set; } = "";
 
 		/// <summary> Метод для реализации интерфейса клонирования </summary>
 		public object Clone()

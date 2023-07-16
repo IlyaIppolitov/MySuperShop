@@ -50,7 +50,7 @@ app.MapControllers();
 
 app.MapGet("/get_products", GetAllProductsAsync);
 app.MapGet("/get_product", GetProductByIdAsync);
-app.MapPost("/add_product", AddProductAsync);
+app.MapPost("/add_product",  AddProductAsync);
 app.MapPost("/update_product", UpdateProductAsync);
 app.MapPost("/delete_product", DeleteProductAsync);
 
@@ -95,9 +95,9 @@ async Task<IResult> AddProductAsync(
     try
     {
         await repository.Add(product, cancellationToken);
-        return Results.Created("Объект создан!", product);
+        return Results.Created("Created!", product);
     }
-    catch (NotSupportedException ex)
+    catch (Exception ex)
     {
         return Results.Problem(ex.ToString());
     }

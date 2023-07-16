@@ -1,4 +1,4 @@
-﻿<MudCardMedia Image="@getPicName()" Height="100" />
+﻿<MudCardMedia Image="@Product.Pic" Height="100" />
 <MudCardContent>
 	<MudText Typo="Typo.h5" Class="mud-info">@Product.Name</MudText>
 	<MudText Typo="Typo.body2" Class="mud-info">@Product.Description</MudText>
@@ -9,11 +9,4 @@
 @code {
 	[Parameter]
 	public Product Product { get; set; }
-
-	private string fullPicName = "/pics/";
-
-	public string getPicName()
-	{
-		return fullPicName + Product.Pic;
-	}
 }

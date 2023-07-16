@@ -1,7 +1,7 @@
 ﻿@page "/testPage"
 @using System.Runtime.InteropServices
 @using System.Globalization
-@inject IMyShopClient client
+@inject IMyShopClient Client
 
 <MudText Typo="Typo.h4" Justify="Justify.Center" Align="Align.Center">TestPage</MudText>
 
@@ -45,7 +45,7 @@
 
     private async void GetProducts()
     {
-        var products = await client.GetProducts();
+        var products = await Client.GetProducts();
         if (products.Length == 0)
         {
             RecievedData = "No items found";
@@ -70,7 +70,7 @@
         {
             try
             {
-                var product = await client.GetProduct(testGuid);
+                var product = await Client.GetProduct(testGuid);
                 RecievedData = GetProductShortInfo(product);
                 await InvokeAsync(() => StateHasChanged());
             }
@@ -108,9 +108,10 @@
             Product product = new Product(Guid.NewGuid(), NewNameValue, newPrice);
             product.Description = product.Name + "Описание";
             product.Stock = 5;
+            product.Pic = "";
             try
             {
-                await client.AddProduct(product);
+                await Client.AddProduct(product);
                 RecievedData = "Product added successfully!";
                 await InvokeAsync(() => StateHasChanged());
             }
@@ -157,7 +158,7 @@
             product.Stock = 5;
             try
             {
-                await client.UpdateProduct(product);
+                await Client.UpdateProduct(product);
                 RecievedData = "Product updated successfully!";
                 await InvokeAsync(() => StateHasChanged());
             }
@@ -182,7 +183,7 @@
         if (Guid.TryParse(GuidValue, out var testGuid))
         {
             Product product = new Product(testGuid, "123", 0);
-            await client.DeleteProduct(product);
+            await Client.DeleteProduct(product);
             RecievedData = "Product deleted successfully!";
             await InvokeAsync(() => StateHasChanged());
         }
