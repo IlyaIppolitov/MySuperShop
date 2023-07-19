@@ -1,6 +1,6 @@
-﻿using MySuperShop.Models;
+﻿using MySuperShop.HttpApiClient.Models;
 
-namespace MySuperShop.Interfaces
+namespace MySuperShop.HttpApiClient
 {
     public interface IMyShopClient
     {

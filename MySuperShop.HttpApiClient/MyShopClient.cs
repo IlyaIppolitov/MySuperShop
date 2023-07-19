@@ -1,8 +1,7 @@
-﻿using MySuperShop.Interfaces;
-using MySuperShop.Models;
+﻿using MySuperShop.HttpApiClient.Models;
 using System.Net.Http.Json;
 
-namespace MySuperShop.Services
+namespace MySuperShop.HttpApiClient
 {
 
     public class MyShopClient : IDisposable, IMyShopClient
