@@ -9,7 +9,7 @@ namespace MyShopBackend.Data
 	/// Модель данных для товара в магазине
 	/// </summary>
 	[Index("Price")]
-	public class Product : ICloneable
+	public class Product : ICloneable, IEntity
 	{
 
 		/// <summary>

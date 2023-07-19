@@ -19,8 +19,9 @@ builder.Services.AddSwaggerGen();
 // Добавление CORS в builder
 builder.Services.AddCors();
 
-// Подключение репозитория базы данных
-builder.Services.AddScoped<IProductRepository, ProductRepositoryEf>();
+// Подключение репозитория
+builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+builder.Services.AddScoped<IAccountRepository, AccountRepositoryEf>();
 
 var app = builder.Build();
 
@@ -48,93 +49,95 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapGet("/get_products", GetAllProductsAsync);
-app.MapGet("/get_product", GetProductByIdAsync);
-app.MapPost("/add_product",  AddProductAsync);
-app.MapPost("/update_product", UpdateProductAsync);
-app.MapPost("/delete_product", DeleteProductAsync);
+// app.MapGet("/get_products", GetAllProductsAsync);
+// app.MapGet("/get_product", GetProductByIdAsync);
+// app.MapPost("/add_product",  AddProductAsync);
+// app.MapPost("/update_product", UpdateProductAsync);
+// app.MapPost("/delete_product", DeleteProductAsync);
+
+// app.MapGet("/", (IAccountRepository repo) => { });
 
 
-// (R) Read All
-async Task<IResult> GetAllProductsAsync(IProductRepository repository, CancellationToken cancellationToken)
-{
-    try
-    {
-        var products =  await repository.GetProducts(cancellationToken);
-        return Results.Ok(products);
-    }
-    catch (Exception e)
-    {
-        return Results.Empty;
-    }
-}
-
-// (R) Read product by Id
-async Task<IResult> GetProductByIdAsync(
-    IProductRepository repository,
-    [FromQuery] Guid id,
-    CancellationToken cancellationToken)
-{
-    try
-    {
-        var foundProduct = await repository.GetProductById(id, cancellationToken);
-        return Results.Ok(foundProduct);
-    }
-    catch (InvalidOperationException eх)
-    {
-        return Results.NotFound();
-    }
-}
-
-// (C) Add product
-async Task<IResult> AddProductAsync(
-    IProductRepository repository,
-    Product product, 
-    CancellationToken cancellationToken)
-{
-    try
-    {
-        await repository.Add(product, cancellationToken);
-        return Results.Created("Created!", product);
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem(ex.ToString());
-    }
-}
-
-// (U) Update product
-async Task<IResult> UpdateProductAsync(
-    IProductRepository repository,
-    [FromBody] Product product,
-    CancellationToken cancellationToken)
-{
-    try
-    {
-        await repository.Update(product, cancellationToken);
-        return Results.Ok();
-    }
-    catch (Exception e)
-    {
-        return Results.NotFound();
-    }
-}
-
-// (D) Delete product
-async Task<IResult> DeleteProductAsync(
-    IProductRepository repository,
-    [FromBody] Product product,
-    CancellationToken cancellationToken)
-{
-    try
-    {
-        await repository.Delete(product, cancellationToken);
-        return Results.Ok();
-    }
-    catch (Exception e)
-    {
-        return Results.NotFound();
-    }
-}
+// // (R) Read All
+// async Task<IResult> GetAllProductsAsync(IRepository<Product> repository, CancellationToken cancellationToken)
+// {
+//     try
+//     {
+//         var products =  await repository.GetAll(cancellationToken);
+//         return Results.Ok(products);
+//     }
+//     catch (Exception e)
+//     {
+//         return Results.Empty;
+//     }
+// }
+//
+// // (R) Read product by Id
+// async Task<IResult> GetProductByIdAsync(
+//     IRepository<Product> repository,
+//     [FromQuery] Guid id,
+//     CancellationToken cancellationToken)
+// {
+//     try
+//     {
+//         var foundProduct = await repository.GetById(id, cancellationToken);
+//         return Results.Ok(foundProduct);
+//     }
+//     catch (InvalidOperationException eх)
+//     {
+//         return Results.NotFound();
+//     }
+// }
+//
+// // (C) Add product
+// async Task<IResult> AddProductAsync(
+//     IRepository<Product> repository,
+//     Product product, 
+//     CancellationToken cancellationToken)
+// {
+//     try
+//     {
+//         await repository.Add(product, cancellationToken);
+//         return Results.Created("Created!", product);
+//     }
+//     catch (Exception ex)
+//     {
+//         return Results.Problem(ex.ToString());
+//     }
+// }
+//
+// // (U) Update product
+// async Task<IResult> UpdateProductAsync(
+//     IRepository<Product> repository,
+//     [FromBody] Product product,
+//     CancellationToken cancellationToken)
+// {
+//     try
+//     {
+//         await repository.Update(product, cancellationToken);
+//         return Results.Ok();
+//     }
+//     catch (Exception e)
+//     {
+//         return Results.NotFound();
+//     }
+// }
+//
+// // (D) Delete product
+// async Task<IResult> DeleteProductAsync(
+//     IRepository<Product> repository,
+//     [FromBody] Product product,
+//     CancellationToken cancellationToken)
+// {
+//     try
+//     {
+//         await repository.Delete(product, cancellationToken);
+//         return Results.Ok();
+//     }
+//     catch (Exception e)
+//     {
+//         return Results.NotFound();
+//     }
+// }
 
 app.Run();
