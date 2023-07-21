@@ -1,4 +1,4 @@
-﻿namespace MyShopBackend.Data;
+﻿namespace MySuperShop.Domain.Entities;
 
 public interface IEntity
 {

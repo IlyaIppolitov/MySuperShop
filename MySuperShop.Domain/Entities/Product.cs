@@ -1,14 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using Microsoft.EntityFrameworkCore;
 
-namespace MyShopBackend.Data
+namespace MySuperShop.Domain.Entities
 {
 
 	/// <summary>
 	/// Модель данных для товара в магазине
 	/// </summary>
-	[Index("Price")]
 	public class Product : ICloneable, IEntity
 	{
 

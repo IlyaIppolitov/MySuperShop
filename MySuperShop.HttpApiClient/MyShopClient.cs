@@ -1,7 +1,7 @@
-﻿using MySuperShop.HttpApiClient.Models;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
+using MySuperShop.HttpModels.Requests;
 
-namespace MySuperShop.HttpApiClient
+namespace MySuperShop.HttpModels
 {
 
     public class MyShopClient : IDisposable, IMyShopClient
@@ -86,7 +86,7 @@ namespace MySuperShop.HttpApiClient
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task Register(Account account, CancellationToken cancellationToken = default)
+        public async Task Register(RegisterRequest account, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(account);
             using var response = await _httpClient.PostAsJsonAsync("account/register", account, cancellationToken);

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MySuperShop;
 using MudBlazor.Services;
-using MySuperShop.HttpApiClient;
+using MySuperShop.HttpModels;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");

@@ -4,6 +4,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <TargetFramework>net7.0</TargetFramework>
+    <RootNamespace>MyShopBackend</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +16,11 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.8" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MySuperShop.Domain\MySuperShop.Domain.csproj" />
+    <ProjectReference Include="..\MySuperShop.HttpModels\MySuperShop.HttpModels.csproj" />
   </ItemGroup>
 
 </Project>

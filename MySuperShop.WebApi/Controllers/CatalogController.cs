@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyShopBackend.Data;
+using MySuperShop.Domain.Entities;
+using MySuperShop.Domain.Repositories;
 
 namespace MyShopBackend.Controllers;
 

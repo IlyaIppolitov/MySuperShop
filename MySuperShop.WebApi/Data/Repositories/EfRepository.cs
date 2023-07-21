@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MySuperShop.Domain.Entities;
+using MySuperShop.Domain.Repositories;
 
-namespace MyShopBackend.Data;
+namespace MyShopBackend.Data.Repositories;
 
 public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class, IEntity
 {

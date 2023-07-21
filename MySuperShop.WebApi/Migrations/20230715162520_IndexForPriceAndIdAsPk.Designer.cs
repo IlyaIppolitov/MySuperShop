@@ -11,8 +11,8 @@ using MyShopBackend.Data;
 namespace MyShopBackend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230721060523_AccountTableAdd")]
-    partial class AccountTableAdd
+    [Migration("20230715162520_IndexForPriceAndIdAsPk")]
+    partial class IndexForPriceAndIdAsPk
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,27 +20,7 @@ namespace MyShopBackend.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.8");
 
-            modelBuilder.Entity("MyShopBackend.Data.Account", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Password")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Accounts");
-                });
-
-            modelBuilder.Entity("MyShopBackend.Data.Product", b =>
+            modelBuilder.Entity("MySuperShop.WebApi.Data.Product", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -59,7 +39,7 @@ namespace MyShopBackend.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("TEXT");
 
-                    b.Property<double?>("Stock")
+                    b.Property<double>("Stock")
                         .HasColumnType("REAL");
 
                     b.HasKey("Id");

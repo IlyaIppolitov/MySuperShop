@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyShopBackend.Data;
 
@@ -10,14 +11,16 @@ using MyShopBackend.Data;
 namespace MyShopBackend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230721060523_AccountTableAdd")]
+    partial class AccountTableAdd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.8");
 
-            modelBuilder.Entity("MyShopBackend.Data.Account", b =>
+            modelBuilder.Entity("MySuperShop.WebApi.Data.Account", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -37,7 +40,7 @@ namespace MyShopBackend.Migrations
                     b.ToTable("Accounts");
                 });
 
-            modelBuilder.Entity("MyShopBackend.Data.Product", b =>
+            modelBuilder.Entity("MySuperShop.WebApi.Data.Product", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()

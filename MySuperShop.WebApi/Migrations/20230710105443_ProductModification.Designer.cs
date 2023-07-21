@@ -11,8 +11,8 @@ using MyShopBackend.Data;
 namespace MyShopBackend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230703174242_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20230710105443_ProductModification")]
+    partial class ProductModification
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,18 +20,33 @@ namespace MyShopBackend.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.8");
 
-            modelBuilder.Entity("MyShopBackend.Data.Product", b =>
+            modelBuilder.Entity("MySuperShop.WebApi.Data.Product", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ExpiredAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Pic")
+                        .HasColumnType("TEXT");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ProducedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("Stock")
+                        .HasColumnType("REAL");
 
                     b.HasKey("Id");
 

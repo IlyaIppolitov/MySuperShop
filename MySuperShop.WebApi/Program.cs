@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyShopBackend.Data;
+using MyShopBackend.Data.Repositories;
+using MySuperShop.Domain.Repositories;
+using MySuperShop.Domain.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +25,7 @@ builder.Services.AddCors();
 // Подключение репозитория
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 builder.Services.AddScoped<IAccountRepository, AccountRepositoryEf>();
+builder.Services.AddScoped<AccountService>(); // DIP????
 
 var app = builder.Build();
 

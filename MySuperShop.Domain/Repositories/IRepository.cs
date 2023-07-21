@@ -1,6 +1,6 @@
-﻿namespace MyShopBackend.Data;
+﻿namespace MySuperShop.Domain.Repositories;
 
-public interface IRepository<TEntity> where TEntity: class, IEntity
+public interface IRepository<TEntity> where TEntity: class
 {
     Task<TEntity> GetById(Guid id, CancellationToken cancellationToken);
     Task<IReadOnlyList<TEntity>> GetAll(CancellationToken cancellationToken);

@@ -10,4 +10,8 @@
       <PackageReference Include="FluentValidation" Version="11.6.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\MySuperShop.HttpModels\MySuperShop.HttpModels.csproj" />
+    </ItemGroup>
+
 </Project>

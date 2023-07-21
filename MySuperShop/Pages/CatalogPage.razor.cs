@@ -1,7 +1,7 @@
 ﻿using System.Security;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using MySuperShop.HttpApiClient.Models;
+using MySuperShop.HttpModels.Requests;
 
 namespace MySuperShop.Pages
 {

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace MySuperShop.HttpApiClient.Models
+namespace MySuperShop.HttpModels.Requests
 {
 
 	/// <summary>

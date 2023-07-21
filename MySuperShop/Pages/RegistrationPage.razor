@@ -1,4 +1,5 @@
 ﻿@using System.ComponentModel.DataAnnotations
+@using System.Security.Cryptography
 @inject IMyShopClient Client
 
 @page "/registration"
@@ -69,7 +70,12 @@
 
     private async Task ProcessRegistration()
     {
-        await Client.Register(new Account(name: model.Name, email: model.Email, password: model.Password));
+        await Client.Register(new RegisterRequest
+        {
+            Name = model.Name,
+            Email = model.Email,
+            Password = model.Password
+        });
         success = true;
         StateHasChanged();
     }
