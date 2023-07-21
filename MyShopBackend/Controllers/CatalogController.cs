@@ -3,6 +3,7 @@ using MyShopBackend.Data;
 
 namespace MyShopBackend.Controllers;
 
+[ApiController]
 public class CatalogController : Controller
 {
     private readonly IRepository<Product> _repository;
@@ -13,72 +14,72 @@ public class CatalogController : Controller
     }
     
     [HttpGet("get_products")]
-    public async Task<IResult> GetAllProductsAsync(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllProductsAsync(CancellationToken cancellationToken)
     {
         try
         {
             var products =  await _repository.GetAll(cancellationToken);
-            return Results.Ok(products);
+            return Ok(products);
         }
-        catch (Exception e)
+        catch (ArgumentNullException e)
         {
-            return Results.Empty;
+            return BadRequest();
         }
     }
     
     [HttpGet("get_product")]
-    public async Task<IResult> GetProductByIdAsync([FromQuery] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetProductByIdAsync([FromQuery] Guid id, CancellationToken cancellationToken)
     {
         try
         {
             var foundProduct = await _repository.GetById(id, cancellationToken);
-            return Results.Ok(foundProduct);
+            return Ok(foundProduct);
         }
         catch (InvalidOperationException eх)
         {
-            return Results.NotFound();
+            return NotFound();
         }
     }
     
     [HttpPost ("add_product")]
-    public async Task<IResult> AddProductAsync([FromBody]Product product,CancellationToken cancellationToken)
+    public async Task<IActionResult> AddProductAsync([FromBody]Product product,CancellationToken cancellationToken)
     {
         try
         {
             await _repository.Add(product, cancellationToken);
-            return Results.Created("Created!", product);
+            return Created("Created!", product);
         }
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
         {
-            return Results.Problem(ex.ToString());
+            return Problem(ex.ToString());
         }
     }
     
     [HttpPost("update_product")]
-    public async Task<IResult> UpdateProductAsync([FromBody] Product product, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProductAsync([FromBody] Product product, CancellationToken cancellationToken)
     {
         try
         {
             await _repository.Update(product, cancellationToken);
-            return Results.Ok();
+            return Ok();
         }
-        catch (Exception e)
+        catch (InvalidOperationException e)
         {
-            return Results.NotFound();
+            return NotFound();
         }
     }
     
     [HttpPost("delete_product")]
-    public async Task<IResult> DeleteProductAsync([FromBody] Product product, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteProductAsync([FromBody] Product product, CancellationToken cancellationToken)
     {
         try
         {
             await _repository.Delete(product, cancellationToken);
-            return Results.Ok();
+            return Ok();
         }
-        catch (Exception e)
+        catch (InvalidOperationException e)
         {
-            return Results.NotFound();
+            return NotFound();
         }
     }
 }
