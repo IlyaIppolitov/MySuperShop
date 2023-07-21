@@ -85,5 +85,12 @@ namespace MySuperShop.HttpApiClient
             using var response = await _httpClient.PostAsJsonAsync("delete_product", product, cancellationToken);
             response.EnsureSuccessStatusCode();
         }
+
+        public async Task Register(Account account, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(account);
+            using var response = await _httpClient.PostAsJsonAsync("account/register", account, cancellationToken);
+            response.EnsureSuccessStatusCode();
+        }
     }
 }

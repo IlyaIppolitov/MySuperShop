@@ -9,7 +9,7 @@ public class CatalogController : Controller
 
     public CatalogController(IRepository<Product> repository)
     {
-        _repository = repository;
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
     
     [HttpGet("get_products")]
