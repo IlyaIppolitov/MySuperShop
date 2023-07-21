@@ -50,7 +50,7 @@
     public class RegisterAccountForm
     {
         [Required]
-        [StringLength(20, ErrorMessage = "Имя должно содержать больше трёх символов")]
+        [StringLength(20, MinimumLength = 3, ErrorMessage = "Имя должно быть от 3 до 20 символов")]
         public string Name { get; set; }
 
         [Required]
