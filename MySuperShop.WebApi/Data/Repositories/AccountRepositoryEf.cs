@@ -22,7 +22,6 @@ public class AccountRepositoryEf : EfRepository<Account>, IAccountRepository
     {
         if (email == null) 
             throw new ArgumentNullException(nameof(email));
-        
-        return await Entities.SingleAsync(e => e.Email == email, cancellationToken);
+        return await Entities.SingleOrDefaultAsync(e => e.Email == email, cancellationToken);
     }
 }

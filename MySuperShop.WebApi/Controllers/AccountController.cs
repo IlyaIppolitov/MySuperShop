@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MySuperShop.Domain.Exceptions;
 using MySuperShop.Domain.Services;
 using MySuperShop.HttpModels.Requests;
 
@@ -6,11 +7,11 @@ namespace MyShopBackend.Controllers;
 
 [Route("account")]
 [ApiController]
-public class AccountController : ControllerBase
+public class AccountController : Controller
 {
     private readonly AccountService _accountService;
 
-    AccountController(AccountService accountService)
+    public AccountController(AccountService accountService)
     {
         _accountService = accountService ?? throw new ArgumentNullException(nameof(accountService));
     }
@@ -24,10 +25,13 @@ public class AccountController : ControllerBase
             await _accountService.Register(request.Name, request.Email, request.Password, cancellationToken);
             return Ok();
         }
-        catch(newEXCEPTION)
+        catch (EmailAlreadyExistsException ex)
         {
-            return BadRequest("Account")
+            return BadRequest($"Account with given email already exists: {ex.Value}");
         }
-        
+        catch (ArgumentNullException ex)
+        {
+            return BadRequest("Argument null exception caught:\n" + ex.Message);
+        }
     }
 }

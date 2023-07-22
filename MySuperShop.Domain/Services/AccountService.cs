@@ -1,4 +1,5 @@
 ﻿using MySuperShop.Domain.Entities;
+using MySuperShop.Domain.Exceptions;
 using MySuperShop.Domain.Repositories;
 
 namespace MySuperShop.Domain.Services;
@@ -22,10 +23,10 @@ public class AccountService
         var existedAccount = await _accountRepository.FindAccountByEmail(email, cancellationToken);
         if (existedAccount is not null)
         {
-            throw new InvalidOperationException("Account with given email is already exist");
+            throw new EmailAlreadyExistsException("Account with given email already exists!", email);
         }
         
-        Account account = new Account(Guid.Empty, name, email, EncryptPassword(password));
+        var account = new Account(name, email, EncryptPassword(password));
         await _accountRepository.Add(account, cancellationToken);
     }
 

@@ -9,7 +9,11 @@ public class Account : IEntity
     private string? _email;
     private string? _hashedPassword;
 
-    public Account(Guid id, string name, string email, string hashedPassword)
+    public Account()
+    {
+    }
+
+    public Account(string name, string email, string hashedPassword)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
@@ -22,7 +26,7 @@ public class Account : IEntity
         {
             throw new AggregateException("Value is not a valid email" + email);
         }
-        _id = id;
+        Id = Guid.NewGuid();
         _name = name;
         _email = email;
         _hashedPassword = hashedPassword;

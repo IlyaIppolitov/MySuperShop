@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="myapp" uuid="37f12dce-7c66-4634-9828-08500637e06f">
+    <data-source source="LOCAL" name="myapp" uuid="cac51954-d255-4e5e-9e7a-9492c37efb5d">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:D:\ITStep\Blazor\MySuperShop\MyShopBackend\myapp.db</jdbc-url>
+      <jdbc-url>jdbc:sqlite:D:\ITStep\Blazor\MySuperShop\MySuperShop.WebApi\myapp.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
+      <libraries>
+        <library>
+          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.40.1/org/xerial/sqlite-jdbc/3.40.1.0/sqlite-jdbc-3.40.1.0.jar</url>
+        </library>
+      </libraries>
     </data-source>
   </component>
 </project>
