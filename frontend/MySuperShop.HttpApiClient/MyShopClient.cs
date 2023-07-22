@@ -1,5 +1,9 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
+using MySuperShop.HttpApiClient;
+using MySuperShop.HttpModels.Exceptions;
 using MySuperShop.HttpModels.Requests;
+using MySuperShop.HttpModels.Responses;
 
 namespace MySuperShop.HttpModels
 {
@@ -90,7 +94,23 @@ namespace MySuperShop.HttpModels
         {
             ArgumentNullException.ThrowIfNull(account);
             using var response = await _httpClient.PostAsJsonAsync("account/register", account, cancellationToken);
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                if (response.StatusCode == HttpStatusCode.Conflict)
+                {
+                    var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+                    throw new MySuperShopApiException(error);
+                }
+                else if(response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    var details = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+                    throw new MySuperShopApiException(response.StatusCode, details);
+                }
+                else
+                {
+                    throw new MySuperShopApiException("Неизвестная ошибка!");
+                }
+            }
         }
     }
 }

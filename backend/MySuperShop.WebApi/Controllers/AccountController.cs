@@ -2,6 +2,7 @@
 using MySuperShop.Domain.Exceptions;
 using MySuperShop.Domain.Services;
 using MySuperShop.HttpModels.Requests;
+using MySuperShop.HttpModels.Responses;
 
 namespace MyShopBackend.Controllers;
 
@@ -27,7 +28,7 @@ public class AccountController : Controller
         }
         catch (EmailAlreadyExistsException ex)
         {
-            return BadRequest($"Account with given email already exists: {ex.Value}");
+            return Conflict( new ErrorResponse("Аккаунт с таким Email уже зарегистрирован!"));
         }
         catch (ArgumentNullException ex)
         {
