@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using MySuperShop.HttpModels.Exceptions;
+using MySuperShop.HttpApiClient.Exceptions;
 using MySuperShop.HttpModels.Requests;
 
 namespace MySuperShop.Pages
@@ -35,7 +35,7 @@ namespace MySuperShop.Pages
                 _registrationInProgress = false;
                 await DialogService.ShowMessageBox(
                     "Ошибка!",
-                    $"Что-то пошло не так во время регистрации, а именно:\n{ex.Message}");
+                    $"Ошибка регистрации: {ex.Message}");
             }
             finally
             {

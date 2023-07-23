@@ -1,55 +1,41 @@
 ﻿using System.Net;
-using System.Runtime.Serialization;
-using MySuperShop.HttpApiClient;
 using MySuperShop.HttpModels.Responses;
 
-namespace MySuperShop.HttpModels.Exceptions;
+namespace MySuperShop.HttpApiClient.Exceptions;
 
 [Serializable]
 public class MySuperShopApiException : Exception
 {
-    public HttpStatusCode? StatusCode { get; }
-    public ErrorResponse? Error { get; set; }
+    public ErrorResponse? Error { get; }
     public ValidationProblemDetails? Details { get; }
+    public HttpStatusCode? StatusCode { get; }
 
     public MySuperShopApiException()
     {
     }
 
-    public MySuperShopApiException(HttpStatusCode satusCode, ValidationProblemDetails details)
+    public MySuperShopApiException(HttpStatusCode statusCode, ValidationProblemDetails details) : base(details.Title)
     {
-        StatusCode = satusCode;
+        StatusCode = statusCode;
         Details = details;
     }
 
-    public MySuperShopApiException(ValidationProblemDetails details)
-    {
-        Details = details;
-    }
-
-
-    public MySuperShopApiException(ErrorResponse error)
+    public MySuperShopApiException(ErrorResponse error) : base(error.Message)
     {
         Error = error;
+        StatusCode = error.StatusCode;
     }
 
-    protected MySuperShopApiException(SerializationInfo info, StreamingContext context) : base(info, context)
+    public MySuperShopApiException(HttpStatusCode statusCode, string message)
     {
-        Error = new ErrorResponse(info.ToString());
-    }
-
-    public MySuperShopApiException(string? message, ErrorResponse error) : base(message)
-    {
-        Error = error;
+        StatusCode = statusCode;
     }
 
     public MySuperShopApiException(string? message) : base(message)
     {
-        Error = new ErrorResponse(message);
     }
 
-    public MySuperShopApiException(string? message, Exception? innerException, ErrorResponse error) : base(message, innerException)
+    public MySuperShopApiException(string? message, Exception? innerException) : base(message, innerException)
     {
-        Error = error;
     }
 }
