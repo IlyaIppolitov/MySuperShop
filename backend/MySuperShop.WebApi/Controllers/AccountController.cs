@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 using MySuperShop.Domain.Exceptions;
 using MySuperShop.Domain.Services;
 using MySuperShop.HttpModels.Requests;
 using MySuperShop.HttpModels.Responses;
+#pragma warning disable CS8604
 
 namespace MyShopBackend.Controllers;
 
@@ -18,7 +20,7 @@ public class AccountController : Controller
     }
     
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<RegisterResponse>> Register(RegisterRequest request, CancellationToken cancellationToken)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
         try
@@ -33,6 +35,26 @@ public class AccountController : Controller
         catch (ArgumentNullException ex)
         {
             return BadRequest("Argument null exception caught:\n" + ex.Message);
+        }
+    }
+
+    [HttpPost("login")]
+    public async Task<ActionResult<LoginResponse>> Login(
+        LoginRequest reqest,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var account = await _accountService.Login(reqest.Email, reqest.Password, cancellationToken);
+            return new LoginResponse(account.Id, account.Name);
+        }
+        catch (AccountNotFoundException)
+        {
+            return Conflict(new ErrorResponse("Аккаунт с таким Email не найден!"));
+        }
+        catch (InvalidPasswordException)
+        {
+            return Conflict(new ErrorResponse("Неверный пароль"));
         }
     }
 }

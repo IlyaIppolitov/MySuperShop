@@ -1,6 +1,7 @@
 ﻿using MySuperShop.HttpModels.Requests;
+using MySuperShop.HttpModels.Responses;
 
-namespace MySuperShop.HttpModels
+namespace MySuperShop.HttpApiClient
 {
     public interface IMyShopClient
     {
@@ -9,6 +10,7 @@ namespace MySuperShop.HttpModels
         Task<Product[]> GetProducts(CancellationToken cancellationToken = default);
         Task UpdateProduct(Product product, CancellationToken cancellationToken = default);
         Task DeleteProduct(Product product, CancellationToken cancellationToken = default);
-        Task Register(RegisterRequest account, CancellationToken cancellationToken = default);
+        Task<RegisterResponse> Register(RegisterRequest account, CancellationToken cancellationToken = default);
+        Task<LoginResponse> Login(LoginRequest request, CancellationToken cancellationToken = default);
     }
 }

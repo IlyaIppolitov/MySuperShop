@@ -18,7 +18,7 @@ namespace MySuperShop.Data.EntityFramework.Migrations
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Email = table.Column<string>(type: "TEXT", nullable: true),
-                    Password = table.Column<string>(type: "TEXT", nullable: true)
+                    HashedPassword = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

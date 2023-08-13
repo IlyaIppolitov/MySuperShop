@@ -64,7 +64,7 @@ public class Account : IEntity
         }
     }
 
-    public string? Password
+    public string? HashedPassword
     {
         get => _hashedPassword;
         set

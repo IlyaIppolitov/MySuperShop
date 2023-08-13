@@ -1,4 +1,5 @@
-﻿using MySuperShop.Domain.Entities;
+﻿using Microsoft.Extensions.Logging;
+using MySuperShop.Domain.Entities;
 using MySuperShop.Domain.Exceptions;
 using MySuperShop.Domain.Repositories;
 
@@ -8,10 +9,17 @@ public class AccountService
 {
 
     private readonly IAccountRepository _accountRepository;
+    private readonly IApplicationPasswordHasher _hasher;
+    private readonly ILogger<AccountService> _logger;
 
-    public AccountService(IAccountRepository accountRepository)
+    public AccountService(
+        IAccountRepository accountRepository,
+        IApplicationPasswordHasher hasher,
+        ILogger<AccountService> logger)
     {
         _accountRepository = accountRepository ?? throw new ArgumentNullException(nameof(accountRepository));
+        _hasher = hasher ?? throw new ArgumentNullException(nameof(hasher));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
     
     public async Task Register(string name, string email, string password, CancellationToken cancellationToken)
@@ -30,8 +38,41 @@ public class AccountService
         await _accountRepository.Add(account, cancellationToken);
     }
 
-    private static string EncryptPassword(string request)
+    private string EncryptPassword(string request)
     {
-        return request;
+        var hashedPassword = _hasher.HashPassword(request);
+        _logger.LogDebug("Password was hashed {HashedPassword}", hashedPassword);
+        return hashedPassword;
+    }
+
+    public async Task<Account> Login(string email, string password, CancellationToken cancellationToken)
+    {
+        if (email == null) throw new ArgumentNullException(nameof(email));
+        if (password == null) throw new ArgumentNullException(nameof(password));
+
+        var account = await _accountRepository.FindAccountByEmail(email, cancellationToken);
+        if (account is null)
+        {
+            throw new AccountNotFoundException("Account with given email not found");
+        }
+        
+        var isPasswordValid = _hasher.VerifyHashedPassword(account.HashedPassword, password, out var rehashNeeded);
+        if (!isPasswordValid)
+        {
+            throw new InvalidPasswordException("Invalid password");
+        }
+
+        if (rehashNeeded)
+        {
+            await RehashPassword(password, account, cancellationToken);
+        }
+
+        return account;
+    }
+
+    private Task RehashPassword(string password, Account account, CancellationToken cancellationToken)
+    {
+        account.HashedPassword = EncryptPassword(password);
+        return _accountRepository.Update(account, cancellationToken);
     }
 }

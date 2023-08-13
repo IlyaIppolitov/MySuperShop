@@ -11,7 +11,7 @@ using MySuperShop.Data.EntityFramework;
 namespace MySuperShop.Data.EntityFramework.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230722172950_Initial")]
+    [Migration("20230813101515_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -29,10 +29,10 @@ namespace MySuperShop.Data.EntityFramework.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("HashedPassword")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

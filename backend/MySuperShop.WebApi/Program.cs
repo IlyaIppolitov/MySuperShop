@@ -1,3 +1,5 @@
+using IdentityPasswordHasherLib;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MySuperShop.Data.EntityFramework;
@@ -26,6 +28,7 @@ builder.Services.AddCors();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 builder.Services.AddScoped<IAccountRepository, AccountRepositoryEf>();
 builder.Services.AddScoped<AccountService>(); // DIP????
+builder.Services.AddSingleton<IApplicationPasswordHasher, IdentityPasswordHasher>();
 
 var app = builder.Build();
 
