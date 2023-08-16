@@ -1,4 +1,5 @@
 using IdentityPasswordHasherLib;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +31,30 @@ builder.Services.AddScoped<IAccountRepository, AccountRepositoryEf>();
 builder.Services.AddScoped<AccountService>(); // DIP????
 builder.Services.AddSingleton<IApplicationPasswordHasher, IdentityPasswordHasher>();
 
+//Логирование всех запросов и ответов
+builder.Services.AddHttpLogging(options => //настройка
+{
+    options.LoggingFields = HttpLoggingFields.RequestHeaders
+                            | HttpLoggingFields.ResponseHeaders;
+});
+
 var app = builder.Build();
+
+// app.Use(async (context, next) =>
+// {
+//     IHeaderDictionary headers = context.Request.Headers;
+//     if (!headers["User-Agent"].ToString().Contains("Edg"))
+//     {
+//         await context.Response.WriteAsync(
+//             "We support only Edge browser!");
+//         return; //прерываем выполнение конвейера
+//     }
+//
+//     await next();
+// });
+
+// Подключение логирования через AddHttpLogging (в building)
+// app.UseHttpLogging();
 
 // ���������� CORS � WebApplication
 app.UseCors(policy =>
@@ -55,96 +79,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
-// app.MapGet("/get_products", GetAllProductsAsync);
-// app.MapGet("/get_product", GetProductByIdAsync);
-// app.MapPost("/add_product",  AddProductAsync);
-// app.MapPost("/update_product", UpdateProductAsync);
-// app.MapPost("/delete_product", DeleteProductAsync);
-
-// app.MapGet("/", (IAccountRepository repo) => { });
-
-
-// // (R) Read All
-// async Task<IResult> GetAllProductsAsync(IRepository<Product> repository, CancellationToken cancellationToken)
-// {
-//     try
-//     {
-//         var products =  await repository.GetAll(cancellationToken);
-//         return Results.Ok(products);
-//     }
-//     catch (Exception e)
-//     {
-//         return Results.Empty;
-//     }
-// }
-//
-// // (R) Read product by Id
-// async Task<IResult> GetProductByIdAsync(
-//     IRepository<Product> repository,
-//     [FromQuery] Guid id,
-//     CancellationToken cancellationToken)
-// {
-//     try
-//     {
-//         var foundProduct = await repository.GetById(id, cancellationToken);
-//         return Results.Ok(foundProduct);
-//     }
-//     catch (InvalidOperationException e�)
-//     {
-//         return Results.NotFound();
-//     }
-// }
-//
-// // (C) Add product
-// async Task<IResult> AddProductAsync(
-//     IRepository<Product> repository,
-//     Product product, 
-//     CancellationToken cancellationToken)
-// {
-//     try
-//     {
-//         await repository.Add(product, cancellationToken);
-//         return Results.Created("Created!", product);
-//     }
-//     catch (Exception ex)
-//     {
-//         return Results.Problem(ex.ToString());
-//     }
-// }
-//
-// // (U) Update product
-// async Task<IResult> UpdateProductAsync(
-//     IRepository<Product> repository,
-//     [FromBody] Product product,
-//     CancellationToken cancellationToken)
-// {
-//     try
-//     {
-//         await repository.Update(product, cancellationToken);
-//         return Results.Ok();
-//     }
-//     catch (Exception e)
-//     {
-//         return Results.NotFound();
-//     }
-// }
-//
-// // (D) Delete product
-// async Task<IResult> DeleteProductAsync(
-//     IRepository<Product> repository,
-//     [FromBody] Product product,
-//     CancellationToken cancellationToken)
-// {
-//     try
-//     {
-//         await repository.Delete(product, cancellationToken);
-//         return Results.Ok();
-//     }
-//     catch (Exception e)
-//     {
-//         return Results.NotFound();
-//     }
-// }
 
 app.Run();
