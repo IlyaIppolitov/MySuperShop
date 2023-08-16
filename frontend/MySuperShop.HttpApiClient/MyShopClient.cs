@@ -97,25 +97,6 @@ namespace MySuperShop.HttpApiClient
             const string uri = "account/register";
 
             return await _httpClient.PostAsJsonAnsDeserializeAsync<RegisterRequest, RegisterResponse>(account, uri, cancellationToken);
-
-            using var response = await _httpClient.PostAsJsonAsync("account/register", account, cancellationToken);
-            if (!response.IsSuccessStatusCode)
-            {
-                if (response.StatusCode == HttpStatusCode.Conflict)
-                {
-                    var error = await response.Content.ReadFromJsonAsync<ErrorResponse>(cancellationToken: cancellationToken);
-                    throw new MySuperShopApiException(error!);
-                }
-                else if(response.StatusCode == HttpStatusCode.BadRequest)
-                {
-                    var details = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(cancellationToken: cancellationToken);
-                    throw new MySuperShopApiException(response.StatusCode, details!);
-                }
-                else
-                {
-                    throw new MySuperShopApiException("Неизвестная ошибка!");
-                }
-            }
         }
 
         public async Task<LoginResponse> Login(LoginRequest request, CancellationToken cancellationToken)
@@ -124,30 +105,6 @@ namespace MySuperShop.HttpApiClient
             const string uri = "account/login";
 
             return await _httpClient.PostAsJsonAnsDeserializeAsync<LoginRequest, LoginResponse>(request, uri, cancellationToken);
-            
-
-            using var response = await _httpClient.PostAsJsonAsync(uri, request, cancellationToken);
-            if (!response.IsSuccessStatusCode)
-            {
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.Conflict:
-                    {
-                        var error = await response.Content.ReadFromJsonAsync<ErrorResponse>(cancellationToken: cancellationToken);
-                        throw new MySuperShopApiException(error!);
-                    }
-                    case HttpStatusCode.BadRequest:
-                    {
-                        var details = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(cancellationToken: cancellationToken);
-                        throw new MySuperShopApiException(response.StatusCode, details!);
-                    }
-                    default:
-                        throw new MySuperShopApiException($"Неизветсная ошибка {response.StatusCode}");
-                }
-            }
-            
-            var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>(cancellationToken: cancellationToken);
-            return loginResponse!;
         }
     }
 }
