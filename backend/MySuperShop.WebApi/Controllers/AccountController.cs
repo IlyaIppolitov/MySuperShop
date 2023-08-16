@@ -26,7 +26,7 @@ public class AccountController : Controller
         try
         {
             await _accountService.Register(request.Name, request.Email, request.Password, cancellationToken);
-            return Ok();
+            return new RegisterResponse(request.Name, request.Email);
         }
         catch (EmailAlreadyExistsException ex)
         {

@@ -1,3 +1,3 @@
 ﻿namespace MySuperShop.HttpModels.Responses;
 
-public record RegisterResponse(Guid Id, string Name);
+public record RegisterResponse(string Name, string Email);
