@@ -1,4 +1,5 @@
-﻿using MySuperShop.Domain.Services;
+﻿using MySuperShop.Domain.Repositories;
+using MySuperShop.Domain.Services;
 
 namespace MyShopBackend.Middleware;
 
@@ -6,12 +7,12 @@ public class TransitionsCounterMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<TransitionsCounterMiddleware> _logger;
-    private readonly TransitionCounterService _transitionCounter;
+    private readonly ITransitionCounterService _transitionCounter;
     
     public TransitionsCounterMiddleware(
         RequestDelegate next,
         ILogger<TransitionsCounterMiddleware> logger,
-        TransitionCounterService transitionCounter)
+        ITransitionCounterService transitionCounter)
     {
         _next = next ?? throw new ArgumentNullException(nameof(next));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

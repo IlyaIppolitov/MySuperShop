@@ -32,7 +32,7 @@ builder.Services.AddCors();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 builder.Services.AddScoped<IAccountRepository, AccountRepositoryEf>();
 builder.Services.AddScoped<AccountService>(); // DIP????
-builder.Services.AddSingleton<TransitionCounterService>();
+builder.Services.AddSingleton<ITransitionCounterService, TransitionCounterService>();
 builder.Services.AddSingleton<IApplicationPasswordHasher, IdentityPasswordHasher>();
 
 //Логирование всех запросов и ответов
@@ -88,7 +88,7 @@ app.MapControllers();
 
 app.MapGet("/metrics", async (
     HttpContext context, 
-    TransitionCounterService counterService) =>
+    ITransitionCounterService counterService) =>
 {
         var counter = counterService.GetCounter();
         await context.Response.WriteAsJsonAsync(counter);

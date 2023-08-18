@@ -1,17 +1,18 @@
 ﻿using System.Collections.Concurrent;
+using MySuperShop.Domain.Repositories;
 
 namespace MySuperShop.Domain.Services;
 
-public class TransitionCounterService
+public class TransitionCounterService : ITransitionCounterService
 {
     private readonly ConcurrentDictionary<string, int> _counter = new ConcurrentDictionary<string, int>();
 
-    public void ResetCounter()
+    public async Task ResetCounter()
     {
         _counter.Clear();
     }
 
-    public void AddPath(string path)
+    public async Task AddPath(string path)
     {
         if (_counter.ContainsKey(path))
         {
@@ -23,7 +24,7 @@ public class TransitionCounterService
         }
     }
 
-    public ConcurrentDictionary<string, int> GetCounter() {
+    public IDictionary<string, int> GetCounter() {
         return _counter;
     }
 }
