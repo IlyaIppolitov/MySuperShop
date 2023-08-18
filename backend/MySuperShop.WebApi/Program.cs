@@ -1,8 +1,11 @@
+using System.Collections.Concurrent;
 using IdentityPasswordHasherLib;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MyShopBackend.Middleware;
 using MySuperShop.Data.EntityFramework;
 using MySuperShop.Data.EntityFramework.Repositories;
 using MySuperShop.Domain.Repositories;
@@ -29,6 +32,7 @@ builder.Services.AddCors();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 builder.Services.AddScoped<IAccountRepository, AccountRepositoryEf>();
 builder.Services.AddScoped<AccountService>(); // DIP????
+builder.Services.AddSingleton<TransitionCounterService>();
 builder.Services.AddSingleton<IApplicationPasswordHasher, IdentityPasswordHasher>();
 
 //Логирование всех запросов и ответов
@@ -39,6 +43,8 @@ builder.Services.AddHttpLogging(options => //настройка
 });
 
 var app = builder.Build();
+
+app.UseMiddleware<TransitionsCounterMiddleware>();
 
 // app.Use(async (context, next) =>
 // {
@@ -79,5 +85,13 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGet("/metrics", async (
+    HttpContext context, 
+    TransitionCounterService counterService) =>
+{
+        var counter = counterService.GetCounter();
+        await context.Response.WriteAsJsonAsync(counter);
+});
 
 app.Run();

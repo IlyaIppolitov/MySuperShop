@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Concurrent;
+using System.Net;
 using System.Net.Http.Json;
 using MySuperShop.HttpApiClient.Exceptions;
 using MySuperShop.HttpApiClient.Extensions;
@@ -105,6 +106,17 @@ namespace MySuperShop.HttpApiClient
             const string uri = "account/login";
 
             return await _httpClient.PostAsJsonAnsDeserializeAsync<LoginRequest, LoginResponse>(request, uri, cancellationToken);
+        }
+
+        public async Task<ConcurrentDictionary<string, int>> GetMetrics(CancellationToken cancellationToken = default)
+        {
+            var metrics = await _httpClient
+                .GetFromJsonAsync<ConcurrentDictionary<string, int>>($"metrics", cancellationToken);
+            if (metrics is null)
+            {
+                throw new InvalidOperationException("The server returned null");
+            }
+            return metrics;
         }
     }
 }
