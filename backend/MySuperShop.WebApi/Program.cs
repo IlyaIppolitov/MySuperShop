@@ -1,17 +1,28 @@
 using System.Collections.Concurrent;
 using IdentityPasswordHasherLib;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using MyShopBackend.Configurations;
 using MyShopBackend.Middleware;
+using MyShopBackend.Services;
 using MySuperShop.Data.EntityFramework;
 using MySuperShop.Data.EntityFramework.Repositories;
 using MySuperShop.Domain.Repositories;
 using MySuperShop.Domain.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+JwtConfig jwtConfig = builder.Configuration
+    .GetRequiredSection("JwtConfig")
+    .Get<JwtConfig>()!;
+if (jwtConfig is null) throw new InvalidOperationException("JwtConfig is not configured!");
+builder.Services.AddSingleton(jwtConfig);
+
 
 // Add services to the container.
 
@@ -34,6 +45,7 @@ builder.Services.AddScoped<IAccountRepository, AccountRepositoryEf>();
 builder.Services.AddScoped<AccountService>(); // DIP????
 builder.Services.AddSingleton<ITransitionCounterService, TransitionCounterService>();
 builder.Services.AddSingleton<IApplicationPasswordHasher, IdentityPasswordHasher>();
+builder.Services.AddSingleton<ITokenService, TokenService>();
 
 //Логирование всех запросов и ответов
 builder.Services.AddHttpLogging(options => //настройка
@@ -41,6 +53,33 @@ builder.Services.AddHttpLogging(options => //настройка
     options.LoggingFields = HttpLoggingFields.RequestHeaders
                             | HttpLoggingFields.ResponseHeaders;
 });
+
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            IssuerSigningKey = new SymmetricSecurityKey(jwtConfig.SigningKeyBytes),
+            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+            RequireExpirationTime = true,
+            RequireSignedTokens = true,
+          
+            ValidateAudience = true,
+            ValidateIssuer = true,
+            ValidAudiences = new[] { jwtConfig.Audience },
+            ValidIssuer = jwtConfig.Issuer
+        };
+    });
+builder.Services.AddAuthorization();
+
+
 
 var app = builder.Build();
 
@@ -82,7 +121,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllers();
 

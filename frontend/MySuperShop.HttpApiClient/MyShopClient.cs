@@ -104,6 +104,8 @@ namespace MySuperShop.HttpApiClient
         {
             ArgumentNullException.ThrowIfNull(request);
             const string uri = "account/login";
+            var response = await _httpClient.PostAsJsonAnsDeserializeAsync<LoginRequest, LoginResponse>(request, uri, cancellationToken);
+            var headerResponse
 
             return await _httpClient.PostAsJsonAnsDeserializeAsync<LoginRequest, LoginResponse>(request, uri, cancellationToken);
         }

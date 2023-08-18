@@ -22,7 +22,7 @@ public class AccountService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
     
-    public async Task Register(string name, string email, string password, CancellationToken cancellationToken)
+    public virtual async Task Register(string name, string email, string password, CancellationToken cancellationToken)
     {
         if (name == null) throw new ArgumentNullException(nameof(name));
         if (email == null) throw new ArgumentNullException(nameof(email));
@@ -45,7 +45,7 @@ public class AccountService
         return hashedPassword;
     }
 
-    public async Task<Account> Login(string email, string password, CancellationToken cancellationToken)
+    public virtual async Task<Account> Login(string email, string password, CancellationToken cancellationToken)
     {
         if (email == null) throw new ArgumentNullException(nameof(email));
         if (password == null) throw new ArgumentNullException(nameof(password));
@@ -74,5 +74,10 @@ public class AccountService
     {
         account.HashedPassword = EncryptPassword(password);
         return _accountRepository.Update(account, cancellationToken);
+    }
+
+    public object GetAccountById(Guid id, CancellationToken cancellationToken)
+    {
+        return _accountRepository.GetById(id, cancellationToken);
     }
 }

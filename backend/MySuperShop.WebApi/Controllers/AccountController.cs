@@ -1,5 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MyShopBackend.Services;
 using MySuperShop.Domain.Exceptions;
 using MySuperShop.Domain.Services;
 using MySuperShop.HttpModels.Requests;
@@ -13,10 +16,12 @@ namespace MyShopBackend.Controllers;
 public class AccountController : Controller
 {
     private readonly AccountService _accountService;
+    private readonly ITokenService _tokenService;
 
-    public AccountController(AccountService accountService)
+    public AccountController(AccountService accountService, ITokenService tokenService)
     {
         _accountService = accountService ?? throw new ArgumentNullException(nameof(accountService));
+        _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
     }
     
     [HttpPost("register")]
@@ -46,7 +51,8 @@ public class AccountController : Controller
         try
         {
             var account = await _accountService.Login(reqest.Email, reqest.Password, cancellationToken);
-            return new LoginResponse(account.Id, account.Name);
+            var token = _tokenService.GenerateToken(account);
+            return new LoginResponse(account.Id, account.Name, token);
         }
         catch (AccountNotFoundException)
         {
@@ -56,5 +62,15 @@ public class AccountController : Controller
         {
             return Conflict(new ErrorResponse("Неверный пароль"));
         }
+    }
+
+    [Authorize]
+    [HttpGet("current")]
+    public Task<ActionResult<AccountResponse>> GetCurrentAccount(CancellationToken cancellationToken)
+    {
+        var account = _accountService.GetAccountById(
+            Guid.Parse((User.FindFirstValue(ClaimTypes.NameIdentifier))),
+            cancellationToken);
+        return new AccountResponse(account.Id, account.Name, account.)
     }
 }
