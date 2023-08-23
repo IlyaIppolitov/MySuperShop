@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyShopBackend.Services;
+using MySuperShop.Domain.Entities;
 using MySuperShop.Domain.Exceptions;
 using MySuperShop.Domain.Services;
 using MySuperShop.HttpModels.Requests;
@@ -30,7 +31,8 @@ public class AccountController : Controller
         if (request == null) throw new ArgumentNullException(nameof(request));
         try
         {
-            await _accountService.Register(request.Name, request.Email, request.Password, cancellationToken);
+            var customerRole = new Role[] { Role.Customer };
+            await _accountService.Register(request.Name, request.Email, request.Password, customerRole, cancellationToken);
             return new RegisterResponse(request.Name, request.Email);
         }
         catch (EmailAlreadyExistsException ex)
@@ -66,11 +68,25 @@ public class AccountController : Controller
 
     [Authorize]
     [HttpGet("current")]
-    public Task<ActionResult<AccountResponse>> GetCurrentAccount(CancellationToken cancellationToken)
+    public async Task<ActionResult<AccountResponse>> GetCurrentAccount(CancellationToken cancellationToken)
     {
-        var account = _accountService.GetAccountById(
-            Guid.Parse((User.FindFirstValue(ClaimTypes.NameIdentifier))),
-            cancellationToken);
-        return new AccountResponse(account.Id, account.Name, account.)
+        var strId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var guid = Guid.Parse(strId);
+        var account = await _accountService.GetAccountById(guid, cancellationToken);
+        return new AccountResponse(account.Id, account.Name, account.Email);
+    }
+
+    [HttpGet("all")]
+    public async Task<ActionResult<Account[]>> GetAllAccounts(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var products =  await _accountService.GetAll(cancellationToken);
+            return Ok(products);
+        }
+        catch (ArgumentNullException e)
+        {
+            return Conflict(new ErrorResponse("Аккаунты отсутствуют!"));
+        }
     }
 }

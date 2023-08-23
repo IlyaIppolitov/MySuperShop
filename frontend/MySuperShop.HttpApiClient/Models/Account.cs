@@ -1,9 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace MySuperShop.Domain.Entities;
-
-public class Account : IEntity
+public class Account
 {
     private Guid _id;
     private string? _name;
@@ -91,4 +89,9 @@ public class Account : IEntity
             throw new InvalidEnumArgumentException(nameof(role), (int)role, typeof(Role));
         Roles = Roles.Append(role).ToArray();
     }
+}
+
+public enum Role
+{
+    Customer, Manager, Admin
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using MySuperShop.HttpApiClient.Exceptions;
 using MySuperShop.HttpApiClient.Extensions;
@@ -44,6 +45,17 @@ namespace MySuperShop.HttpApiClient
         {
             if (!_httpClientInjected)
                 ((IDisposable)_httpClient).Dispose();
+        }
+
+        public async Task<Account[]> GetAccounts(CancellationToken cancellationToken = default)
+        {
+            var accounts = await _httpClient
+                .GetFromJsonAsync<Account[]>($"get_accounts", cancellationToken);
+            if (accounts is null)
+            {
+                throw new InvalidOperationException("The server returned null");
+            }
+            return accounts;
         }
 
         public async Task<Product[]> GetProducts(CancellationToken cancellationToken = default)
@@ -105,9 +117,9 @@ namespace MySuperShop.HttpApiClient
             ArgumentNullException.ThrowIfNull(request);
             const string uri = "account/login";
             var response = await _httpClient.PostAsJsonAnsDeserializeAsync<LoginRequest, LoginResponse>(request, uri, cancellationToken);
-            var headerResponse
-
-            return await _httpClient.PostAsJsonAnsDeserializeAsync<LoginRequest, LoginResponse>(request, uri, cancellationToken);
+            var headerValue = new AuthenticationHeaderValue("Bearer", response.Token);
+            _httpClient.DefaultRequestHeaders.Authorization = headerValue;
+            return response;
         }
 
         public async Task<ConcurrentDictionary<string, int>> GetMetrics(CancellationToken cancellationToken = default)

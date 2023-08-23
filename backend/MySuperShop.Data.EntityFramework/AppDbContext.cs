@@ -13,5 +13,20 @@ namespace MySuperShop.Data.EntityFramework
             base(options)
         {
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            BuildAccountModel(modelBuilder);
+        }
+        private static void BuildAccountModel(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Account>()
+                .Property(e => e.Roles)
+                .HasConversion(
+                    v => string.Join(',', v),
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(Enum.Parse<Role>).ToArray()
+                );
+        }
     }
 }

@@ -1,7 +1,3 @@
 ﻿namespace MySuperShop.HttpModels.Responses;
 
-public class AccountResponse
-{
-    public Guid Id { get; set; }
-    
-}
+public record AccountResponse(Guid Id, string Name, string Email);

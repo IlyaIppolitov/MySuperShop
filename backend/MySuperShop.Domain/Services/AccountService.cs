@@ -22,7 +22,12 @@ public class AccountService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
     
-    public virtual async Task Register(string name, string email, string password, CancellationToken cancellationToken)
+    public virtual async Task Register(
+        string name, 
+        string email, 
+        string password, 
+        Role[] roles,
+        CancellationToken cancellationToken)
     {
         if (name == null) throw new ArgumentNullException(nameof(name));
         if (email == null) throw new ArgumentNullException(nameof(email));
@@ -34,7 +39,7 @@ public class AccountService
             throw new EmailAlreadyExistsException("Account with given email already exists!", email);
         }
         
-        var account = new Account(name, email, EncryptPassword(password));
+        var account = new Account(name, email, EncryptPassword(password), roles);
         await _accountRepository.Add(account, cancellationToken);
     }
 
@@ -76,8 +81,13 @@ public class AccountService
         return _accountRepository.Update(account, cancellationToken);
     }
 
-    public object GetAccountById(Guid id, CancellationToken cancellationToken)
+    public async Task<Account> GetAccountById(Guid id, CancellationToken cancellationToken)
     {
-        return _accountRepository.GetById(id, cancellationToken);
+        return await _accountRepository.GetById(id, cancellationToken);
+    }
+
+    public async Task<Account[]?> GetAll(CancellationToken cancellationToken)
+    {
+        return await _accountRepository.GetAllAccounts(cancellationToken);
     }
 }

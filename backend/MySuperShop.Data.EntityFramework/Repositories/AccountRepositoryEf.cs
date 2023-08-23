@@ -24,4 +24,9 @@ public class AccountRepositoryEf : EfRepository<Account>, IAccountRepository
             throw new ArgumentNullException(nameof(email));
         return await Entities.SingleOrDefaultAsync(e => e.Email == email, cancellationToken);
     }
+
+    public async Task<Account[]?> GetAllAccounts(CancellationToken cancellationToken)
+    {
+        return await Entities.ToArrayAsync(cancellationToken);
+    }
 }
