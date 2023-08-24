@@ -50,12 +50,19 @@ namespace MySuperShop.HttpApiClient
         public async Task<Account[]> GetAccounts(CancellationToken cancellationToken = default)
         {
             var accounts = await _httpClient
-                .GetFromJsonAsync<Account[]>($"get_accounts", cancellationToken);
+                .GetFromJsonAsync<Account[]>($"account/all", cancellationToken);
             if (accounts is null)
             {
                 throw new InvalidOperationException("The server returned null");
             }
             return accounts;
+        }
+
+        public async Task<UpdateAccountResponse> UpdateAccount(UpdateAccountRequest account, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(account);
+            const string uri = "account/update";
+            return await _httpClient.PostAsJsonAnsDeserializeAsync<UpdateAccountRequest, UpdateAccountResponse>(account, uri, cancellationToken);
         }
 
         public async Task<Product[]> GetProducts(CancellationToken cancellationToken = default)

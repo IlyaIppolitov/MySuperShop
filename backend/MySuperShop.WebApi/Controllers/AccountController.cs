@@ -76,6 +76,15 @@ public class AccountController : Controller
         return new AccountResponse(account.Id, account.Name, account.Email);
     }
 
+    [HttpPost("update")]
+    public async Task<ActionResult<UpdateAccountResponse>> UpdateAccount(UpdateAccountRequest request, CancellationToken cancellationToken)
+    {
+        var account = await _accountService.UpdateAccount(request.Id, request.Name, request.Email, request.Password, request.Role, cancellationToken);
+        
+        return new UpdateAccountResponse(account.Id, account.Name, account.Email);
+    }
+    
+    [Authorize(Roles = nameof(Role.Admin))]
     [HttpGet("all")]
     public async Task<ActionResult<Account[]>> GetAllAccounts(CancellationToken cancellationToken)
     {

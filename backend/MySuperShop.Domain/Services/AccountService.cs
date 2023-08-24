@@ -75,10 +75,10 @@ public class AccountService
         return account;
     }
 
-    private Task RehashPassword(string password, Account account, CancellationToken cancellationToken)
+    private async Task RehashPassword(string password, Account account, CancellationToken cancellationToken)
     {
         account.HashedPassword = EncryptPassword(password);
-        return _accountRepository.Update(account, cancellationToken);
+        await _accountRepository.Update(account, cancellationToken);
     }
 
     public async Task<Account> GetAccountById(Guid id, CancellationToken cancellationToken)
@@ -89,5 +89,17 @@ public class AccountService
     public async Task<Account[]?> GetAll(CancellationToken cancellationToken)
     {
         return await _accountRepository.GetAllAccounts(cancellationToken);
+    }
+
+    public async Task<Account> UpdateAccount(Guid id, string name, string email, string password, string role, CancellationToken cancellationToken)
+    {
+        var account = await _accountRepository.GetById(id, cancellationToken);
+        account.Name = name;
+        account.Email = email;
+        account.HashedPassword = EncryptPassword(password);
+        if(Role.TryParse(role, true, out Role newRole))
+            account.GrantRole(newRole);
+        await _accountRepository.Update(account, cancellationToken);
+        return await _accountRepository.GetById(id, cancellationToken);
     }
 }

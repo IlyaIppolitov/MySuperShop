@@ -15,5 +15,6 @@ namespace MySuperShop.HttpApiClient
         Task<LoginResponse> Login(LoginRequest request, CancellationToken cancellationToken = default);
         Task<ConcurrentDictionary<string, int>> GetMetrics(CancellationToken cancellationToken = default);
         Task<Account[]> GetAccounts(CancellationToken cancellationToken = default);
+        Task<UpdateAccountResponse> UpdateAccount(UpdateAccountRequest account, CancellationToken cancellationToken = default);
     }
 }

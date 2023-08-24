@@ -1,70 +1,74 @@
 ﻿@page "/account/all"
-@using System.Net.Http.Json
-@using MudBlazor
 @using MySuperShop.HttpApiClient
+@using MySuperShop.HttpApiClient.Exceptions
 @inject IMyShopClient Client
 @inject ISnackbar Snackbar
 
-<MudTable Items="@Accounts" Dense="false" Hover="true" ReadOnly="@ronly" CanCancelEdit="true" Filter="new Func<Account,bool>(FilterFunc)"
-          @bind-SelectedItem="selectedItem1" SortLabel="Sort By" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-          IsEditRowSwitchingBlocked="true">
+<MudTable Items="@Accounts" Dense="false" Hover="true" ReadOnly="@_ronly" CanCancelEdit="@true" Filter="new Func<Account,bool>(FilterFunc)"
+          @bind-SelectedItem="_selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
+          OnCommitEditClick="UpdateAccount" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="async (context)=>await UpdateAccount (context)" IsEditRowSwitchingBlocked="@_blockSwitch" ApplyButtonPosition="TableApplyButtonPosition.End" EditButtonPosition="TableEditButtonPosition.End" EditTrigger="TableEditTrigger.EditButton">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Periodic Elements</MudText>
+        <MudText Typo="Typo.h6">List of accounts</MudText>
         <MudSpacer />
-        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        <col style="width:50px;" />
-        <col style="width:80px;" />
-        <col style="width:50%;" />
-        <col />
-        <col />
-        <col style="width:50px;" />
+        <col style="width:20%" />
+        <col style="width:30%;" />
+        <col style="width:20%;" />
+        <col style="width:30%;"/>
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Account, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Account, object>(x=>x.Email)">Sign</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Account, object>(x=>x.HashedPassword)">Position</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Account, object>(x=>x.Roles)">Mass</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Account, object>(x=>x.Email)">Email</MudTableSortLabel></MudTh>
+        <MudTh>Pass</MudTh>
+        <MudTh>Roles</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Email">@context.Email</MudTd>
-        <MudTd DataLabel="Password">@context.HashedPassword</MudTd>
-        <MudTd DataLabel="Roles">@context.Roles</MudTd>
+        <MudTd DataLabel="Password">@_newPassword</MudTd>
+        <MudTd DataLabel="Roles">@context.Roles.ToString()</MudTd>
     </RowTemplate>
     <RowEditingTemplate>
-        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Name">
+            <MudTextField @bind-Value="@context.Name" Required/>
+        </MudTd>
         <MudTd DataLabel="Email">
             <MudTextField @bind-Value="@context.Email" Required />
         </MudTd>
         <MudTd DataLabel="Password">
-            <MudTextField @bind-Value="@context.HashedPassword" Required />
+            <MudTextField @bind-Value="@_newPassword" Required />
         </MudTd>
         <MudTd DataLabel="Roles(Customer/Manager/Admin)">
-            <MudTextField @bind-Value="@context.Roles" Required Min="1" />
+            <MudSelect T="Role" @bind-Value="@_newRole" Label="Pizza" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter">
+                <MudSelectItem Value="@(Role.Admin)" />
+                <MudSelectItem Value="@(Role.Customer)" />
+                <MudSelectItem Value="@(Role.Manager)" />
+            </MudSelect>
         </MudTd>
     </RowEditingTemplate>
     <PagerContent>
         <MudTablePager />
     </PagerContent>
     <EditButtonContent Context="button">
-        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Class="pa-0" />
+        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled" />
     </EditButtonContent>
 </MudTable>
 
-<MudSwitch @bind-Checked="@ronly" Color="Color.Tertiary">Read Only</MudSwitch>
+<MudSwitch @bind-Checked="@_ronly" Color="Color.Tertiary">Read Only</MudSwitch>
 @code {
-    private bool dense = false;
-    private bool hover = true;
-    private bool ronly = true;
-    private bool canCancelEdit = false;
-    private bool blockSwitch = false;
-    private string searchString = "";
-    private Account selectedItem1 = null;
-    private Account accountBeforeEdit;
-    private HashSet<Account> selectedItems1 = new HashSet<Account>();
+    private bool _ronly = true;
+    private bool _blockSwitch = false;
+    
+    private string _searchString = "";
+    private Account _selectedItem1 = null;
+    private Account _accountBeforeEdit;
+    private string _newPassword = "";
+    private Role _newRole = Role.Customer;
+    private HashSet<Account> _selectedItems1 = new HashSet<Account>();
     private IEnumerable<Account> Accounts = new List<Account>();
+    [Inject] private IDialogService DialogService { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -73,7 +77,7 @@
 
     private void BackupItem(object element)
     {
-        accountBeforeEdit = new()
+        _accountBeforeEdit = new()
             {
                 Name = ((Account)element).Name,
                 Email = ((Account)element).Email,
@@ -84,22 +88,64 @@
 
     private void ResetItemToOriginalValues(object account)
     {
-        ((Account)account).Name = accountBeforeEdit.Name;
-        ((Account)account).Email = accountBeforeEdit.Email;
-        ((Account)account).HashedPassword = accountBeforeEdit.HashedPassword;
-        ((Account)account).Roles = accountBeforeEdit.Roles;
+        ((Account)account).Name = _accountBeforeEdit.Name;
+        ((Account)account).Email = _accountBeforeEdit.Email;
+        ((Account)account).HashedPassword = _accountBeforeEdit.HashedPassword;
+        ((Account)account).Roles = _accountBeforeEdit.Roles;
     }
 
     private bool FilterFunc(Account account)
     {
-        if (string.IsNullOrWhiteSpace(searchString))
+        if (string.IsNullOrWhiteSpace(_searchString))
             return true;
-        if (account.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (account.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (account.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (account.Email.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if ($"{account.Roles}".Contains(searchString))
+        if ($"{account.Roles}".Contains(_searchString))
             return true;
         return false;
+    }
+
+    private void ItemHasBeenCommitted(object account)
+    {
+        AddEditionEvent($"RowEditCommit event: Changes to Element {((Account)account).Name} committed");
+    }
+
+    private void AddEditionEvent(string message)
+    {
+        StateHasChanged();
+    }
+
+    private async Task UpdateAccount(object account)
+    {
+        var updAccount = (Account)account;
+
+        var request = new UpdateAccountRequest();
+        request.Id = updAccount.Id;
+        request.Name = updAccount.Name;
+        request.Email = updAccount.Email;
+        request.Password = _newPassword;
+        request.Role = _newRole.ToString();
+        try
+        {
+            await Client.UpdateAccount(request);
+            await DialogService.ShowMessageBox(
+                "Успех!",
+                $"Aккаунт обновлен в базе",
+                yesText: "Ok!");
+            
+        }
+        catch (MySuperShopApiException ex)
+        {
+            await DialogService.ShowMessageBox(
+                "Ошибка!",
+                $"Ошибка обновления: {ex.Message}");
+        }
+        finally
+        {
+            _newPassword = "";
+            await InvokeAsync(() => StateHasChanged());
+        }
     }
 }
