@@ -11,6 +11,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddMudServices();
+builder.Services.AddSingleton<AppState>(new AppState());
 builder.Services.AddSingleton<IMyShopClient>(new MyShopClient(host: "localhost:7161"));
 
 await builder.Build().RunAsync();

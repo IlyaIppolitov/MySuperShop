@@ -66,17 +66,6 @@ public class Account
         }
     }
 
-    public string? HashedPassword
-    {
-        get => _hashedPassword;
-        set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Value is null or whitespace" + nameof(value));
-            _hashedPassword = value;
-        }
-    }
-
     public Role[] Roles
     {
         get => _roles;
@@ -88,6 +77,20 @@ public class Account
         if (!Enum.IsDefined(typeof(Role), role))
             throw new InvalidEnumArgumentException(nameof(role), (int)role, typeof(Role));
         Roles = Roles.Append(role).ToArray();
+    }
+
+    public string RolesString
+    {
+        get
+        {
+            return string.Join(",", Roles);
+        }
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                throw new ArgumentException("Value is null or whitespace" + nameof(value));
+            Roles = value.Split(',').Select(Enum.Parse<Role>).ToArray();
+        }
     }
 }
 

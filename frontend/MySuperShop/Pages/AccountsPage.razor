@@ -1,6 +1,7 @@
 ﻿@page "/account/all"
 @using MySuperShop.HttpApiClient
 @using MySuperShop.HttpApiClient.Exceptions
+@using SQLitePCL
 @inject IMyShopClient Client
 @inject ISnackbar Snackbar
 
@@ -27,8 +28,8 @@
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Email">@context.Email</MudTd>
-        <MudTd DataLabel="Password">@_newPassword</MudTd>
-        <MudTd DataLabel="Roles">@context.Roles.ToString()</MudTd>
+        <MudTd DataLabel="Password"></MudTd>
+        <MudTd DataLabel="Roles">@context.RolesString</MudTd>
     </RowTemplate>
     <RowEditingTemplate>
         <MudTd DataLabel="Name">
@@ -41,10 +42,12 @@
             <MudTextField @bind-Value="@_newPassword" Required />
         </MudTd>
         <MudTd DataLabel="Roles(Customer/Manager/Admin)">
-            <MudSelect T="Role" @bind-Value="@_newRole" Label="Pizza" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter">
-                <MudSelectItem Value="@(Role.Admin)" />
-                <MudSelectItem Value="@(Role.Customer)" />
-                <MudSelectItem Value="@(Role.Manager)" />
+            @* <MudSelect T="Role" @bind-Value="@_newRole" Label="Roles" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter"> *@
+            <MudSelect T="string" @bind-Value="@context.RolesString" Label="Roles" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter" 
+                       MultiSelection="true"  MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" @bind-SelectedValues="@_selectedRoles">
+                <MudSelectItem T="string" Value="@(Role.Admin.ToString())" />
+                <MudSelectItem T="string" Value="@(Role.Customer.ToString())" />
+                <MudSelectItem T="string" Value="@(Role.Manager.ToString())" />
             </MudSelect>
         </MudTd>
     </RowEditingTemplate>
@@ -66,6 +69,7 @@
     private Account _accountBeforeEdit;
     private string _newPassword = "";
     private Role _newRole = Role.Customer;
+    private IEnumerable<string> _selectedRoles;
     private HashSet<Account> _selectedItems1 = new HashSet<Account>();
     private IEnumerable<Account> Accounts = new List<Account>();
     [Inject] private IDialogService DialogService { get; set; }
@@ -81,7 +85,6 @@
             {
                 Name = ((Account)element).Name,
                 Email = ((Account)element).Email,
-                HashedPassword = ((Account)element).HashedPassword,
                 Roles = ((Account)element).Roles
             };
     }
@@ -90,7 +93,6 @@
     {
         ((Account)account).Name = _accountBeforeEdit.Name;
         ((Account)account).Email = _accountBeforeEdit.Email;
-        ((Account)account).HashedPassword = _accountBeforeEdit.HashedPassword;
         ((Account)account).Roles = _accountBeforeEdit.Roles;
     }
 
@@ -126,7 +128,7 @@
         request.Name = updAccount.Name;
         request.Email = updAccount.Email;
         request.Password = _newPassword;
-        request.Role = _newRole.ToString();
+        request.Roles = string.Join(", ", _selectedRoles.Select(x => x));
         try
         {
             await Client.UpdateAccount(request);
@@ -147,5 +149,10 @@
             _newPassword = "";
             await InvokeAsync(() => StateHasChanged());
         }
+    }
+
+    private string GetMultiSelectionText(List<string> selectedValues)
+    {
+        return string.Join(", ", selectedValues.Select(x => x));
     }
 }

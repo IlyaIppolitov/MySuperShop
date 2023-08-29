@@ -91,4 +91,9 @@ public class Account : IEntity
             throw new InvalidEnumArgumentException(nameof(role), (int)role, typeof(Role));
         Roles = Roles.Append(role).ToArray();
     }
+
+    public void UpdateRoles(Role[] roles)
+    {
+        Roles = roles;
+    }
 }

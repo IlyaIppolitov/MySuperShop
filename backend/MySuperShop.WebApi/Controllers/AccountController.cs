@@ -73,18 +73,18 @@ public class AccountController : Controller
         var strId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var guid = Guid.Parse(strId);
         var account = await _accountService.GetAccountById(guid, cancellationToken);
-        return new AccountResponse(account.Id, account.Name, account.Email);
+        return new AccountResponse(account.Id, account.Name, account.Email, account.Roles.ToString());
     }
 
     [HttpPost("update")]
     public async Task<ActionResult<UpdateAccountResponse>> UpdateAccount(UpdateAccountRequest request, CancellationToken cancellationToken)
     {
-        var account = await _accountService.UpdateAccount(request.Id, request.Name, request.Email, request.Password, request.Role, cancellationToken);
+        var account = await _accountService.UpdateAccount(request.Id, request.Name, request.Email, request.Password, request.Roles, cancellationToken);
         
         return new UpdateAccountResponse(account.Id, account.Name, account.Email);
     }
     
-    [Authorize(Roles = nameof(Role.Admin))]
+    // [Authorize(Roles = nameof(Role.Admin))]
     [HttpGet("all")]
     public async Task<ActionResult<Account[]>> GetAllAccounts(CancellationToken cancellationToken)
     {

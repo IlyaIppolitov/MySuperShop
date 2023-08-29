@@ -18,6 +18,6 @@ public class UpdateAccountRequest
     public string Password { get; set; }
 
     [Required]
-    public string Role { get; set; }
+    public string Roles { get; set; }
 
 }

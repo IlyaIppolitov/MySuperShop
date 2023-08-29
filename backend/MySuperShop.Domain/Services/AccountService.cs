@@ -91,14 +91,13 @@ public class AccountService
         return await _accountRepository.GetAllAccounts(cancellationToken);
     }
 
-    public async Task<Account> UpdateAccount(Guid id, string name, string email, string password, string role, CancellationToken cancellationToken)
+    public async Task<Account> UpdateAccount(Guid id, string name, string email, string password, string roles, CancellationToken cancellationToken)
     {
         var account = await _accountRepository.GetById(id, cancellationToken);
         account.Name = name;
         account.Email = email;
         account.HashedPassword = EncryptPassword(password);
-        if(Role.TryParse(role, true, out Role newRole))
-            account.GrantRole(newRole);
+        account.Roles = roles.Split(',').Select(Enum.Parse<Role>).ToArray();
         await _accountRepository.Update(account, cancellationToken);
         return await _accountRepository.GetById(id, cancellationToken);
     }
