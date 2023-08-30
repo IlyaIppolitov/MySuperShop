@@ -58,6 +58,17 @@ namespace MySuperShop.HttpApiClient
             return accounts;
         }
 
+        public async Task<AccountResponse> GetCurrentAccount(CancellationToken cancellationToken = default)
+        {
+            var accountResponse = await _httpClient
+                .GetFromJsonAsync<AccountResponse>($"account/current", cancellationToken);
+            if (accountResponse is null)
+            {
+                throw new InvalidOperationException("The server returned null");
+            }
+            return accountResponse;
+        }
+
         public async Task<UpdateAccountResponse> UpdateAccount(UpdateAccountRequest account, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(account);
@@ -124,8 +135,7 @@ namespace MySuperShop.HttpApiClient
             ArgumentNullException.ThrowIfNull(request);
             const string uri = "account/login";
             var response = await _httpClient.PostAsJsonAnsDeserializeAsync<LoginRequest, LoginResponse>(request, uri, cancellationToken);
-            var headerValue = new AuthenticationHeaderValue("Bearer", response.Token);
-            _httpClient.DefaultRequestHeaders.Authorization = headerValue;
+            SetAuthorizationToken(response.Token);
             return response;
         }
 
@@ -139,5 +149,14 @@ namespace MySuperShop.HttpApiClient
             }
             return metrics;
         }
+
+        public void SetAuthorizationToken(string token)
+        {
+            if (token == null) throw new ArgumentNullException(nameof(token));
+            var header = new AuthenticationHeaderValue("Bearer", token);
+            _httpClient.DefaultRequestHeaders.Authorization = header;
+            IsAuthorizationTokenSet = true;
+        }
+        public bool IsAuthorizationTokenSet { get; private set; }
     }
 }

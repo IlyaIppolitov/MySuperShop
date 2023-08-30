@@ -39,7 +39,7 @@ public class Account : IEntity
     public Guid Id
     {
         get => _id;
-        set => _id = value;
+        init => _id = value;
     }
 
     public string? Name
@@ -90,10 +90,5 @@ public class Account : IEntity
         if (!Enum.IsDefined(typeof(Role), role))
             throw new InvalidEnumArgumentException(nameof(role), (int)role, typeof(Role));
         Roles = Roles.Append(role).ToArray();
-    }
-
-    public void UpdateRoles(Role[] roles)
-    {
-        Roles = roles;
     }
 }

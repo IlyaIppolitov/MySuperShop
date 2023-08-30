@@ -6,22 +6,19 @@ public class Account
     private Guid _id;
     private string? _name;
     private string? _email;
-    private string? _hashedPassword;
     private Role[]? _roles;
 
     public Account()
     {
     }
 
-    public Account(string name, string email, string hashedPassword, Role[] roles)
+    public Account(string name, string email, Role[] roles)
     {
         if (roles == null) throw new ArgumentNullException(nameof(roles));
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
         if (string.IsNullOrWhiteSpace(email))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(email));
-        if (string.IsNullOrWhiteSpace(hashedPassword))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(hashedPassword));
 
         if (!new EmailAddressAttribute().IsValid(email))
         {
@@ -30,7 +27,6 @@ public class Account
         Id = Guid.NewGuid();
         _name = name;
         _email = email;
-        _hashedPassword = hashedPassword;
         _roles = roles;
     }
 

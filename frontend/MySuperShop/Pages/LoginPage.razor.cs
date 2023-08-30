@@ -28,7 +28,7 @@ namespace MySuperShop.Pages
                     "Успех!",
                     $"Вы успешно вошли! Молодец!",
                     yesText: "Ok!");
-                NavigationManager.NavigateTo("/catalog");
+                NavigationManager.NavigateTo("/accounts/current");
             }
             catch (MySuperShopApiException ex)
             {

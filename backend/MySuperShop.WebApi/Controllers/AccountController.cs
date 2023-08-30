@@ -70,10 +70,18 @@ public class AccountController : Controller
     [HttpGet("current")]
     public async Task<ActionResult<AccountResponse>> GetCurrentAccount(CancellationToken cancellationToken)
     {
-        var strId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var guid = Guid.Parse(strId);
-        var account = await _accountService.GetAccountById(guid, cancellationToken);
-        return new AccountResponse(account.Id, account.Name, account.Email, account.Roles.ToString());
+        try
+        {
+            var strId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var guid = Guid.Parse(strId);
+            var account = await _accountService.GetAccountById(guid, cancellationToken);
+            var resp = new AccountResponse(account.Id, account.Name, account.Email, string.Join(",", account.Roles));
+            return resp;
+        }
+        catch (AccountNotFoundException)
+        {
+            return Conflict(new ErrorResponse("Аккаунт с таким Email не найден!"));
+        }
     }
 
     [HttpPost("update")]

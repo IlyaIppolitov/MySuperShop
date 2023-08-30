@@ -50,7 +50,7 @@ namespace MySuperShop.Domain.Entities
 
 		/// <summary> ID товара </
 		[Key]
-		public Guid Id { get; set; }
+		public Guid Id { get; init; }
 
 		/// <summary> Название товара </summary>
 		public string Name { get; set; }

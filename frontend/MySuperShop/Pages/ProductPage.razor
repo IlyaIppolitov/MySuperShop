@@ -1,6 +1,7 @@
 ﻿@page "/products/{ProductId:guid}"
 @using MySuperShop.HttpApiClient
 @inject IMyShopClient Client
+@* @inherits AppComponentBase *@
 
 <MudGrid>
     @if (_product is null)

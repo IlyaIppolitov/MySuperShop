@@ -2,9 +2,9 @@
 
 public interface IRepository<TEntity> where TEntity: class
 {
-    Task<TEntity> GetById(Guid id, CancellationToken cancellationToken);
-    Task<IReadOnlyList<TEntity>> GetAll(CancellationToken cancellationToken);
-    Task Add(TEntity entity, CancellationToken cancellationToken);
-    Task Update(TEntity entity, CancellationToken cancellationToken);
-    Task Delete(TEntity entity, CancellationToken cancellationToken);
+    Task<TEntity> GetById(Guid id, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<TEntity>> GetAll(CancellationToken cancellationToken = default);
+    Task Add(TEntity entity, CancellationToken cancellationToken = default);
+    Task Update(TEntity entity, CancellationToken cancellationToken = default);
+    Task Delete(TEntity entity, CancellationToken cancellationToken = default);
 }
