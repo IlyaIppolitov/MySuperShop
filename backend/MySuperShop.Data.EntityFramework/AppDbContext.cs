@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MySuperShop.Domain.Entities;
+using MySuperShop.Domain.Services;
 
 namespace MySuperShop.Data.EntityFramework
 {
@@ -7,6 +8,8 @@ namespace MySuperShop.Data.EntityFramework
     {
         public DbSet<Product> Products => Set<Product>();
         public DbSet<Account> Accounts => Set<Account>();
+        public DbSet<Cart> Carts => Set<Cart>();
+        public DbSet<CartItem> CartsItems => Set<CartItem>();
 
         public AppDbContext(
             DbContextOptions<AppDbContext> options) :

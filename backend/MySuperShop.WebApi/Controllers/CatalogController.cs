@@ -5,7 +5,7 @@ using MySuperShop.Domain.Repositories;
 namespace MyShopBackend.Controllers;
 
 [ApiController]
-public class CatalogController : Controller
+public class CatalogController : ControllerBase
 {
     private readonly IRepository<Product> _repository;
 

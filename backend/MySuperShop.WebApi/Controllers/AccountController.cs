@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyShopBackend.Services;
@@ -14,7 +13,7 @@ namespace MyShopBackend.Controllers;
 
 [Route("account")]
 [ApiController]
-public class AccountController : Controller
+public class AccountController : ControllerBase
 {
     private readonly AccountService _accountService;
     private readonly ITokenService _tokenService;
@@ -26,14 +25,16 @@ public class AccountController : Controller
     }
     
     [HttpPost("register")]
-    public async Task<ActionResult<RegisterResponse>> Register(RegisterRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<LoginResponse>> Register(RegisterRequest request, CancellationToken cancellationToken)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
         try
         {
             var customerRole = new Role[] { Role.Customer };
             await _accountService.Register(request.Name, request.Email, request.Password, customerRole, cancellationToken);
-            return new RegisterResponse(request.Name, request.Email);
+            var account = await _accountService.Login(request.Email, request.Password, cancellationToken);
+            var token = _tokenService.GenerateToken(account);
+            return new LoginResponse(account.Id, account.Name, token);
         }
         catch (EmailAlreadyExistsException ex)
         {
@@ -47,12 +48,12 @@ public class AccountController : Controller
 
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponse>> Login(
-        LoginRequest reqest,
+        LoginRequest request,
         CancellationToken cancellationToken)
     {
         try
         {
-            var account = await _accountService.Login(reqest.Email, reqest.Password, cancellationToken);
+            var account = await _accountService.Login(request.Email, request.Password, cancellationToken);
             var token = _tokenService.GenerateToken(account);
             return new LoginResponse(account.Id, account.Name, token);
         }

@@ -1,6 +1,7 @@
 ﻿using System.Security;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using MySuperShop.HttpApiClient.Exceptions;
 using MySuperShop.HttpModels.Requests;
 
 namespace MySuperShop.Pages
@@ -11,11 +12,15 @@ namespace MySuperShop.Pages
 		private Product[]? _products;
 		private CancellationTokenSource _cts = new();
 		private bool _editPopoverIsOpen = false;
+		private bool _quantityInputPopoverIsOpen = false;
 		private string _name = "";
 		private string _pic = "";
 		private string _description = "";
 		private decimal _price = 0;
 		private double _stock = 0;
+		private double _quantity = 1;
+		private Guid _currentAccountId;
+		private Guid _currentProductId;
 
 		protected override async Task OnInitializedAsync()
 		{
@@ -77,6 +82,38 @@ namespace MySuperShop.Pages
 				await InvokeAsync(() => StateHasChanged());
 				await CloseEditPopover();
 			}
+		}
+
+		private async Task AddProductToCart(Product product)
+		{
+			_currentProductId = product.Id;
+			_quantityInputPopoverIsOpen = true;
+		}
+
+		private void ClosQuantityInputPopover()
+		{
+			_quantityInputPopoverIsOpen = false;
+		}
+
+		private async Task ConfirmAndCloseQuantityInputPopover()
+		{
+			try
+			{
+				var resp = await Client.GetCurrentAccount();
+				_currentAccountId = resp.Id;
+
+				await Client.AddCartItemToCart(new AddCartItemRequest(_currentAccountId, _currentProductId, _quantity));
+			
+			}
+			catch (MySuperShopApiException ex)
+			{
+				await DialogService.ShowMessageBox(
+					"Ошибка!",
+					$"Ошибка авторизации: {ex.Message}");
+			}
+
+			_quantity = 1;
+			_quantityInputPopoverIsOpen = false;
 		}
 	}
 }

@@ -23,12 +23,14 @@ namespace MySuperShop.Pages
             _registrationInProgress = true;
             try
             {
-                await Client.Register(_model);
+                var response = await Client.Register(_model);
+                await LocalStorage.SetItemAsync("token", response.Token);
+                State.IsTokenChecked = true;
                 await DialogService.ShowMessageBox(
                     "Успех!",
                     $"Вы успешно зарегистрировались! Молодец!",
                     yesText: "Ok!");
-                NavigationManager.NavigateTo("/accounts/current");
+                NavigationManager.NavigateTo("/account/current");
             }
             catch (MySuperShopApiException ex)
             {

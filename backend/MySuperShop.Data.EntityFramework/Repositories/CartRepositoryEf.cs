@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MySuperShop.Domain.Entities;
+using MySuperShop.Domain.Exceptions;
 using MySuperShop.Domain.Repositories;
 
 namespace MySuperShop.Data.EntityFramework.Repositories;
@@ -9,9 +10,18 @@ public class CartRepositoryEf : EfRepository<Cart>, ICartRepository
     public CartRepositoryEf(AppDbContext dbContext) : base(dbContext)
     {
     }
-    
-    public override async Task<Cart> GetById(Guid id, CancellationToken cancellationToken)
-        => await Entities
+
+    public async Task<Cart> GetCartByAccountId(Guid id, CancellationToken cancellationToken)
+    {
+        var ent = await Entities.FirstOrDefaultAsync(it => it.AccountId == id, cancellationToken);
+        if (ent is null)
+        {
+            throw new AccountNotFoundException("Account with given email not found");
+        }
+        var cart = await Entities
             .Include(it => it.Items)
-            .FirstAsync(it => it.Id == id, cancellationToken);
+            .Where(it => it.AccountId == id)
+            .FirstAsync(cancellationToken);
+        return cart;
+    }
 }

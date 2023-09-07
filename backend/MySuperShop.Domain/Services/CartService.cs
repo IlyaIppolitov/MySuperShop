@@ -7,33 +7,31 @@ public class CartService
 {
     private readonly ICartRepository _cartRepository;
 
-    public CartService(ICartRepository cartRepository)
+    public CartService(
+        ICartRepository cartRepository)
     {
         _cartRepository = cartRepository ?? throw new ArgumentNullException(nameof(cartRepository));
     }
 
-    public virtual async Task AddProduct(Guid accountId, Product product, double quantity = 1d)
+    public virtual async Task AddProduct(Guid accountId, Guid productId, double quantity, CancellationToken cancellationToken)
     {
-        if (product == null) throw new ArgumentNullException(nameof(product));
-        var cart = await _cartRepository.GetById(accountId);
+        var cart = await _cartRepository.GetCartByAccountId(accountId, cancellationToken);
         
-        var existedItem = cart.Items.FirstOrDefault(item => item.ProductId == product.Id);
-        // В метода GetCartByAccountId должен быть использован Include(nameof(Cart.Items));
+        var existedItem = cart.Items!.FirstOrDefault(item => item.ProductId == productId);
         if (existedItem is null)
         {
-            cart.Items.Add(new Cart.CartItem(Guid.Empty, product.Id, quantity));
+            cart.Items!.Add(new CartItem(Guid.Empty, productId, quantity));
         }
         else
         {
             existedItem.Quantity += quantity;
         }
-        
-        
-        await _cartRepository.Update(cart);
+
+        await _cartRepository.Update(cart, cancellationToken);
     }
 
-    public virtual Task<Cart> GetAccountCart(Guid accountId)
+    public virtual Task<Cart> GetAccountCart(Guid accountId, CancellationToken cancellationToken)
     {
-        return _cartRepository.GetById(accountId);
+        return _cartRepository.GetCartByAccountId(accountId, cancellationToken);
     }
 }

@@ -21,6 +21,7 @@
 				<MudCardActions>
 			        <MudButton OnClick="async () => await DeleteProduct(product)"  Variant="Variant.Text" Color="Color.Secondary">DELETE</MudButton>
 			        <MudButton OnClick="() => NavToProductCard(product.Id)" Variant="Variant.Text" Color="Color.Warning">INFO</MudButton>
+			        <MudButton OnClick="() => AddProductToCart(product)" Variant="Variant.Text" Color="Color.Success">CART</MudButton>
 				</MudCardActions>
 			</MudCard>
 		</MudItem>
@@ -44,4 +45,12 @@
 		<MudFab OnClick="SaveAndCloseEditPopover" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Save"/>
 	</MudToolBar>
 </MudPopover>
-
+<MudPopover Open="@_quantityInputPopoverIsOpen" Fixed="true" Class="px-8 pt-8">
+	<MudTextField T="double" Typo="Typo.h3" Class="mb-4" @bind-Value="_quantity" Label="Количество"/>
+	<MudDivider DividerType="DividerType.Middle" Class="my-6"/>
+	<MudToolBar>
+		<MudFab OnClick="ClosQuantityInputPopover" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Cancel"/>
+		<MudSpacer />
+		<MudFab OnClick="ConfirmAndCloseQuantityInputPopover" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Save"/>
+	</MudToolBar>
+</MudPopover>

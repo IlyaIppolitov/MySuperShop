@@ -1,4 +1,4 @@
-﻿@page "/accounts/current"
+﻿@page "/account/current"
 @using MySuperShop.HttpApiClient
 @using MySuperShop.HttpApiClient.Exceptions
 @inject IMyShopClient Client
@@ -45,6 +45,12 @@
             await DialogService.ShowMessageBox(
                 "Ошибка!",
                 $"Ошибка авторизации: {ex.Message}");
+        }
+        catch (Exception exception)
+        {
+            await DialogService.ShowMessageBox(
+                "Ошибка!",
+                $"Ошибка авторизации: {exception.Message}");
         }
     }
     

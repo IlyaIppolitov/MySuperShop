@@ -5,7 +5,6 @@ namespace MySuperShop.Domain.Entities;
 
 public class Account : IEntity
 {
-    private Guid _id;
     private string? _name;
     private string? _email;
     private string? _hashedPassword;
@@ -15,7 +14,7 @@ public class Account : IEntity
     {
     }
 
-    public Account(string name, string email, string hashedPassword, Role[] roles)
+    public Account(Guid id, string name, string email, string hashedPassword, Role[] roles)
     {
         if (roles == null) throw new ArgumentNullException(nameof(roles));
         if (string.IsNullOrWhiteSpace(name))
@@ -29,18 +28,14 @@ public class Account : IEntity
         {
             throw new AggregateException("Value is not a valid email" + email);
         }
-        Id = Guid.NewGuid();
+        Id = id;
         _name = name;
         _email = email;
         _hashedPassword = hashedPassword;
         _roles = roles;
     }
 
-    public Guid Id
-    {
-        get => _id;
-        init => _id = value;
-    }
+    public Guid Id { get; init; }
 
     public string? Name
     {

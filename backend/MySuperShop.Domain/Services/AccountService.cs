@@ -11,13 +11,16 @@ public class AccountService
     private readonly IAccountRepository _accountRepository;
     private readonly IApplicationPasswordHasher _hasher;
     private readonly ILogger<AccountService> _logger;
+    private readonly IUnitOfWork _uow;
 
     public AccountService(
         IAccountRepository accountRepository,
         IApplicationPasswordHasher hasher,
+        IUnitOfWork uow,
         ILogger<AccountService> logger)
     {
         _accountRepository = accountRepository ?? throw new ArgumentNullException(nameof(accountRepository));
+        _uow = uow ?? throw new ArgumentNullException(nameof(uow));
         _hasher = hasher ?? throw new ArgumentNullException(nameof(hasher));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -39,8 +42,11 @@ public class AccountService
             throw new EmailAlreadyExistsException("Account with given email already exists!", email);
         }
         
-        var account = new Account(name, email, EncryptPassword(password), roles);
-        await _accountRepository.Add(account, cancellationToken);
+        Account account = new Account(Guid.NewGuid(), name, email, EncryptPassword(password), roles);
+        Cart cart = new(Guid.NewGuid(), account.Id);
+        await _uow.AccountRepository.Add(account, cancellationToken);
+        await _uow.CartRepository.Add(cart, cancellationToken);
+        await _uow.SaveChangesAsync(cancellationToken);
     }
 
     private string EncryptPassword(string request)

@@ -12,6 +12,14 @@ namespace MySuperShop.Pages
         private LoginRequest _model = new LoginRequest();
         private bool _loginInProgress = false;
 
+        protected override async Task OnInitializedAsync()
+        {
+            await base.OnInitializedAsync();
+            
+            if (State.IsTokenChecked)
+                NavigationManager.NavigateTo("/account/current");
+        }
+
         private async Task ProcessRegistration()
         {
             if (_loginInProgress)
@@ -23,12 +31,14 @@ namespace MySuperShop.Pages
             _loginInProgress = true;
             try
             {
-                await Client.Login(_model);
+                var response = await Client.Login(_model);
+                await LocalStorage.SetItemAsync("token", response.Token);
+                State.IsTokenChecked = true;
                 await DialogService.ShowMessageBox(
                     "Успех!",
                     $"Вы успешно вошли! Молодец!",
                     yesText: "Ok!");
-                NavigationManager.NavigateTo("/accounts/current");
+                NavigationManager.NavigateTo("/account/current");
             }
             catch (MySuperShopApiException ex)
             {

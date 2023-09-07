@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.ComponentModel.Design;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -121,13 +122,15 @@ namespace MySuperShop.HttpApiClient
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task<RegisterResponse> Register(RegisterRequest account, CancellationToken cancellationToken = default)
+        public async Task<LoginResponse> Register(RegisterRequest account, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(account);
 
             const string uri = "account/register";
 
-            return await _httpClient.PostAsJsonAnsDeserializeAsync<RegisterRequest, RegisterResponse>(account, uri, cancellationToken);
+            var response = await _httpClient.PostAsJsonAnsDeserializeAsync<RegisterRequest, LoginResponse>(account, uri, cancellationToken);
+            SetAuthorizationToken(response.Token);
+            return response;
         }
 
         public async Task<LoginResponse> Login(LoginRequest request, CancellationToken cancellationToken)
@@ -155,8 +158,24 @@ namespace MySuperShop.HttpApiClient
             if (token == null) throw new ArgumentNullException(nameof(token));
             var header = new AuthenticationHeaderValue("Bearer", token);
             _httpClient.DefaultRequestHeaders.Authorization = header;
-            IsAuthorizationTokenSet = true;
         }
-        public bool IsAuthorizationTokenSet { get; private set; }
+
+        public async Task AddCartItemToCart(AddCartItemRequest request, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(request);
+            using var response = await _httpClient.PostAsJsonAsync("cart/add", request, cancellationToken);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<CartResponse> GetCart(CancellationToken cancellationToken = default)
+        {
+            var cartItems = await _httpClient
+                .GetFromJsonAsync<CartResponse>($"cart/current", cancellationToken);
+            if (cartItems is null)
+            {
+                throw new InvalidOperationException("The server returned null");
+            }
+            return cartItems;
+        }
     }
 }

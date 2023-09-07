@@ -42,10 +42,13 @@ builder.Services.AddCors();
 // ����������� �����������
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 builder.Services.AddScoped<IAccountRepository, AccountRepositoryEf>();
+builder.Services.AddScoped<ICartRepository, CartRepositoryEf>();
 builder.Services.AddScoped<AccountService>(); // DIP????
+builder.Services.AddScoped<CartService>(); // DIP????
 builder.Services.AddSingleton<ITransitionCounterService, TransitionCounterService>();
 builder.Services.AddSingleton<IApplicationPasswordHasher, IdentityPasswordHasher>();
 builder.Services.AddSingleton<ITokenService, TokenService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWorkEf>();
 
 //Логирование всех запросов и ответов
 builder.Services.AddHttpLogging(options => //настройка
