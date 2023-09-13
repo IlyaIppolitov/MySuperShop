@@ -29,7 +29,6 @@ public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class,
             throw new ArgumentNullException(nameof(entity));
         
         await Entities.AddAsync(entity, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
     }
     
     public virtual async Task Update(TEntity entity, CancellationToken cancellationToken)
@@ -38,7 +37,6 @@ public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class,
             throw new ArgumentNullException(nameof(entity));
         
         _dbContext.Entry(entity).State = EntityState.Modified;
-        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public virtual async Task Delete(TEntity entity, CancellationToken cancellationToken)
@@ -47,6 +45,5 @@ public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class,
             throw new ArgumentNullException(nameof(entity));
         
         Entities.Remove(entity);
-        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

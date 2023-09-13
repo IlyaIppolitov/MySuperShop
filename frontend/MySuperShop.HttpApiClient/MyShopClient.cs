@@ -122,22 +122,22 @@ namespace MySuperShop.HttpApiClient
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task<LoginResponse> Register(RegisterRequest account, CancellationToken cancellationToken = default)
+        public async Task<LoginByCodeResponse> Register(RegisterRequest account, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(account);
 
             const string uri = "account/register";
 
-            var response = await _httpClient.PostAsJsonAnsDeserializeAsync<RegisterRequest, LoginResponse>(account, uri, cancellationToken);
+            var response = await _httpClient.PostAsJsonAnsDeserializeAsync<RegisterRequest, LoginByCodeResponse>(account, uri, cancellationToken);
             SetAuthorizationToken(response.Token);
             return response;
         }
 
-        public async Task<LoginResponse> Login(LoginRequest request, CancellationToken cancellationToken)
+        public async Task<LoginByCodeResponse> Login(LoginByPassRequest request, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(request);
             const string uri = "account/login";
-            var response = await _httpClient.PostAsJsonAnsDeserializeAsync<LoginRequest, LoginResponse>(request, uri, cancellationToken);
+            var response = await _httpClient.PostAsJsonAnsDeserializeAsync<LoginByPassRequest, LoginByCodeResponse>(request, uri, cancellationToken);
             SetAuthorizationToken(response.Token);
             return response;
         }

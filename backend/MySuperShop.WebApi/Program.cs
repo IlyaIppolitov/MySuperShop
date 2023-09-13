@@ -12,6 +12,7 @@ using MyShopBackend.Middleware;
 using MyShopBackend.Services;
 using MySuperShop.Data.EntityFramework;
 using MySuperShop.Data.EntityFramework.Repositories;
+using MySuperShop.Data.EntityFramework.Service;
 using MySuperShop.Domain.Repositories;
 using MySuperShop.Domain.Services;
 
@@ -39,6 +40,12 @@ builder.Services.AddSwaggerGen();
 // ���������� CORS � builder
 builder.Services.AddCors();
 
+// Подключение smtpConfig, настраемого из файла конфигураций json
+builder.Services.AddOptions<SmtpConfig>()
+    .BindConfiguration("SmtpConfig")
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
 // ����������� �����������
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 builder.Services.AddScoped<IAccountRepository, AccountRepositoryEf>();
@@ -48,7 +55,9 @@ builder.Services.AddScoped<CartService>(); // DIP????
 builder.Services.AddSingleton<ITransitionCounterService, TransitionCounterService>();
 builder.Services.AddSingleton<IApplicationPasswordHasher, IdentityPasswordHasher>();
 builder.Services.AddSingleton<ITokenService, TokenService>();
+builder.Services.AddScoped<IConfirmationCodeRepository, ConfirmationCodeRepositoryEf>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWorkEf>();
+builder.Services.AddScoped<IEmailSender, MailKitSmtpEmailSender>(); 
 
 //Логирование всех запросов и ответов
 builder.Services.AddHttpLogging(options => //настройка

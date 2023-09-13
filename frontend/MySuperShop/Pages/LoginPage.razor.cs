@@ -9,7 +9,7 @@ namespace MySuperShop.Pages
     {
         [Inject] private IDialogService DialogService { get; set; }
         [Inject] private ISnackbar Snackbar { get; set; }
-        private LoginRequest _model = new LoginRequest();
+        private LoginByPassRequest _model = new LoginByPassRequest();
         private bool _loginInProgress = false;
 
         protected override async Task OnInitializedAsync()

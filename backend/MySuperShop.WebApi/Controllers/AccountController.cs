@@ -25,16 +25,16 @@ public class AccountController : ControllerBase
     }
     
     [HttpPost("register")]
-    public async Task<ActionResult<LoginResponse>> Register(RegisterRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<LoginByCodeResponse>> Register(RegisterRequest request, CancellationToken cancellationToken)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
         try
         {
             var customerRole = new Role[] { Role.Customer };
             await _accountService.Register(request.Name, request.Email, request.Password, customerRole, cancellationToken);
-            var account = await _accountService.Login(request.Email, request.Password, cancellationToken);
+            var (account, codeId) = await _accountService.Login(request.Email, request.Password, cancellationToken);
             var token = _tokenService.GenerateToken(account);
-            return new LoginResponse(account.Id, account.Name, token);
+            return new LoginByCodeResponse(account.Id, account.Name, token);
         }
         catch (EmailAlreadyExistsException ex)
         {
@@ -46,16 +46,17 @@ public class AccountController : ControllerBase
         }
     }
 
+    // 1-st stage of login
     [HttpPost("login")]
-    public async Task<ActionResult<LoginResponse>> Login(
-        LoginRequest request,
+    public async Task<ActionResult<LoginByCodeResponse>> Login(
+        LoginByPassRequest request,
         CancellationToken cancellationToken)
     {
         try
         {
-            var account = await _accountService.Login(request.Email, request.Password, cancellationToken);
+            var (account, codeId) = await _accountService.Login(request.Email, request.Password, cancellationToken);
             var token = _tokenService.GenerateToken(account);
-            return new LoginResponse(account.Id, account.Name, token);
+            return new LoginByCodeResponse(account.Id, account.Name, token);
         }
         catch (AccountNotFoundException)
         {
@@ -66,6 +67,36 @@ public class AccountController : ControllerBase
             return Conflict(new ErrorResponse("Неверный пароль"));
         }
     }
+    
+    // 2-nd stage of login
+    [HttpPost("login_by_code")]
+    public async Task<ActionResult<LoginByCodeResponse>> LoginByCode(
+        LoginByCodeRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var account = await _accountService.LoginByCode(request.Email, request.CodeId, request.Code, cancellationToken);
+            var token = _tokenService.GenerateToken(account);
+            return new LoginByCodeResponse(account.Id, account.Name, token);
+        }
+        catch (AccountNotFoundException)
+        {
+            return Conflict(new ErrorResponse("Аккаунт с таким Email не найден!"));
+        }
+        catch (CodeNotFoundException)
+        {
+            return Conflict(new ErrorResponse("Код не генерировался для данного аккаунта!"));
+        }
+        catch (InvalidCodeException)
+        {
+            return Conflict(new ErrorResponse("Код плохой!"));
+        }
+
+    }
+    
+
+
 
     [Authorize]
     [HttpGet("current")]
