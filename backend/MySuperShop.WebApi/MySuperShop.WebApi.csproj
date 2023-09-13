@@ -28,6 +28,7 @@
     <ProjectReference Include="..\MySuperShop.Data.EntityFramework\MySuperShop.Data.EntityFramework.csproj" />
     <ProjectReference Include="..\MySuperShop.Domain\MySuperShop.Domain.csproj" />
     <ProjectReference Include="..\..\shared\MySuperShop.HttpModels\MySuperShop.HttpModels.csproj" />
+    <ProjectReference Include="..\MySuperShop.IdentityPasswordHasherLib\MySuperShop.IdentityPasswordHasherLib.csproj" />
   </ItemGroup>
 
 </Project>
